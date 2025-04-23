@@ -1,0 +1,74 @@
+## Microsoft .NET Core .gitignore
+## Source: https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
+
+# User-specific files
+.vscode/
+.vs/
+*.user
+*.suo
+
+# Build results
+bin/
+obj/
+out/
+
+# Debug and release folders
+[Dd]ebug*/
+[Rr]elease*/
+x64/
+x86/
+
+# Rider
+.idea/
+
+# Visual Studio working folder
+Generated\ Files/
+
+# NuGet packages
+*.nupkg
+*.snupkg
+# The packages folder can be ignored because of Package Restore
+**/packages/*
+# Except build/, which is used as an MSBuild target.
+!**/packages/build/
+# Uncomment if necessary
+#!**/packages/repositories.config
+
+# Microsoft Azure Web App publish settings
+*.PublishSettings
+
+# IIS Express
+/.vs/
+*.iisexpress*
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# dotCover
+.idea/
+*.dotCover
+
+# Logs
+*.log
+
+# Database files
+*.mdf
+*.ldf
+*.sqlite
+*.db
+*.db-shm
+*.db-wal
+
+# Custom: Ignore database folder and wwwroot images
+Database/
+wwwroot/Images/
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Container Files
+/SiteData/
+.env
+docker-compose.override.yml
