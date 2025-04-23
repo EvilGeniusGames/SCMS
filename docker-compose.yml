@@ -1,0 +1,12 @@
+services:
+  scms:
+    build: .
+    ports:
+      - "8080:80"
+    environment:
+      - AdminEmail=${AdminEmail}
+      - AdminPassword=${AdminPassword}
+      - EnableAdminSeeding=${EnableAdminSeeding}
+    volumes:
+      - ./SiteDate/Database:/app/data
+      - ./SiteDate/wwwroot/images:/wwwroot/images

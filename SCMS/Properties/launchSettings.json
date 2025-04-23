@@ -24,6 +24,11 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
+    },
+    "Docker-Compose": {
+      "commandName": "DockerCompose",
+      "serviceName": "scms",
+      "projectName": "docker-compose"
     }
   }
 }
