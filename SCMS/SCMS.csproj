@@ -25,6 +25,9 @@
 
   <ItemGroup>
     <Folder Include="Database\" />
+    <Folder Include="Themes\Default\css\" />
+    <Folder Include="Themes\Default\js\" />
+    <Folder Include="Themes\Default\templates\" />
   </ItemGroup>
 
 </Project>

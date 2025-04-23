@@ -44,9 +44,41 @@ namespace SCMS.Data
                 entity.Property(u => u.SecurityStamp).HasColumnType("TEXT");
             });
 
+            modelBuilder.Entity<ThemeSetting>().HasData(new ThemeSetting
+            {
+                Id = 1,
+                Name = "default",
+                DisplayName = "Default Theme",
+                Description = "Clean layout with light styling",
+                PreviewImage = "/Themes/Default/preview.png",
+                SetOn = DateTime.UtcNow
+            });
+
+            modelBuilder.Entity<SiteSettings>().HasData(new SiteSettings
+            {
+                Id = 1,
+                SiteName = "SCMS Site",
+                Tagline = "Powered by SCMS",
+                ThemeId = 1
+            });
+
+            modelBuilder.Entity<SocialMedia>().HasData(
+                new SocialMedia { Id = 1, Name = "Facebook", Url = "#", IconClass = "fab fa-facebook-f" },
+                new SocialMedia { Id = 2, Name = "Twitter", Url = "#", IconClass = "fab fa-twitter" },
+                new SocialMedia { Id = 3, Name = "Instagram", Url = "#", IconClass = "fab fa-instagram" },
+                new SocialMedia { Id = 4, Name = "YouTube", Url = "#", IconClass = "fab fa-youtube" },
+                new SocialMedia { Id = 5, Name = "LinkedIn", Url = "#", IconClass = "fab fa-linkedin-in" },
+                new SocialMedia { Id = 6, Name = "TikTok", Url = "#", IconClass = "fab fa-tiktok" },
+                new SocialMedia { Id = 7, Name = "Pinterest", Url = "#", IconClass = "fab fa-pinterest-p" },
+                new SocialMedia { Id = 8, Name = "Bluesky", Url = "#", IconClass = "fas fa-globe" } // Generic globe icon
+            );
+
             // TODO: Add CMS-specific model configurations here
         }
 
         // TODO: Define your DbSets here (e.g. Pages, MediaFiles, Posts, etc.)
+        public DbSet<ThemeSetting> ThemeSettings { get; set; }
+        public DbSet<SiteSettings> SiteSettings { get; set; }
+        public DbSet<PageContent> PageContents { get; set; }
     }
 }

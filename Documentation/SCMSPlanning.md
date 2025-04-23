@@ -1,5 +1,3 @@
-<img src="SCMS_Logo.png" alt="SCMS Logo" width="300" />
-
 # Simple Content Management System Planning
 
 ## Overview
@@ -48,6 +46,8 @@ Used in themes/layouts only:
 - `<cms:SearchBar />`
 - `<cms:SocialLinks />`
 - `<cms:Breadcrumbs />`
+- `<cms:Privacy />`
+- `<cms:License />`
 
 ### Insertable Module Tokens (via TinyMCE)
 - `<cms:Image src="id,id,..." mode="random|sequence" />`
@@ -65,20 +65,18 @@ Used in themes/layouts only:
 
 ---
 
-## 🎨 Theming System
-- Themes are organized into folders under `/Themes/{ThemeName}/`
-- Each theme includes:
-  - `layout.cshtml` – main layout structure
-  - `partials/` – reusable components like header, footer, sidebar
-  - `css/` and `js/` folders for styling and scripts
-  - `theme.config.json` for theme metadata and file mappings
-- Supports dynamic token rendering in layout files
-- Page templates are defined per-theme for flexible content presentation
-- Designers can insert layout-level tokens like `<cms:Menu />`, `<cms:Breadcrumbs />`, `<cms:SearchBar />`, etc.
-- Theme can change the site’s visual appearance, structure, and behavior without altering page content
-- Designed to support drag-and-drop layout logic, modular components, and responsive design principles
-- Easy to extend with new layouts, partials, and styling variants
-- System reads and activates theme settings dynamically at runtime
+## 🎨 Theming System (Summary)
+Themes in SCMS live under `/Themes/{ThemeName}` and control the layout and presentation of the site. Each theme includes:
+
+- `layout.cshtml`: Root layout structure
+- `partials/`: Shared view components like `header.cshtml`, `footer.cshtml`
+- `templates/`: Content-specific templates (e.g., `page.cshtml`, `blog.cshtml`)
+- `theme.config.json`: Metadata and default template reference
+- Optional `css/` and `js/` folders for theme-specific styling
+
+Themes can be uploaded as ZIPs and are extracted safely, enabling visual customization without touching backend code.
+
+For full details, see the [Theming.md](./Theming.md) document.
 
 ---
 
