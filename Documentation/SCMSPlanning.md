@@ -1,7 +1,10 @@
+
 # Simple Content Management System Planning
 
 ## Overview
 A lightweight, modular, and Dockerized Content Management System (CMS) built on .NET Core 8 with SQLite, Entity Framework Core, and ASP.NET Core Identity. The system is designed for full portability, media support, dynamic layout theming, insertable content modules, and an extensible token engine.
+
+_Last Updated: 2025-04-24 14:23:45_
 
 ---
 
@@ -25,102 +28,126 @@ A lightweight, modular, and Dockerized Content Management System (CMS) built on 
 ---
 
 ## 🧬 Token System
-Tokens dynamically inject CMS values into theme files and structured content.
 
 ### Designer Tokens
 Used in themes/layouts only:
-- `<cms:Content />`
-- `<cms:PageTitle />`
-- `<cms:CreatedDate />`
-- `<cms:LastUpdated />`
-- `<cms:UpdatedBy />`
-- `<cms:Username />`
-- `<cms:UserEmail />`
-- `<cms:UserRole />`
-- `<cms:IsAuthenticated />`
-- `<cms:SiteTitle />`
-- `<cms:ThemeName />`
-- `<cms:CurrentUrl />`
-- `<cms:Year />`
-- `<cms:Menu orientation="horizontal" />`
-- `<cms:SearchBar />`
-- `<cms:SocialLinks />`
-- `<cms:Breadcrumbs />`
-- `<cms:Privacy />`
-- `<cms:License />`
+### Designer Tokens (Used in themes/layouts only)
 
-### Insertable Module Tokens (via TinyMCE)
-- `<cms:Image src="id,id,..." mode="random|sequence" />`
-- `<cms:Audio src="id" />`
-- `<cms:Video src="id" />`
-- `<cms:Slideshow images="id,id,..." layout="full|poster" transition="fade|slide" delay="3000" />`
-- `<cms:Gallery />`
-- `<cms:Blog />`
-- `<cms:BlogContent />`
-- `<cms:BlogCitation />`
-- `<cms:TagCloud />`
-- `<cms:Store />`
-- `<cms:Store:OnSaleItems />`
-- `<cms:Store:Category name="X" />`
+- `<scms:SiteLogo />`
+- `<scms:SiteTitle />`
+- `<scms:ThemeName />`
+- `<scms:PageTitle />`
+- `<scms:CreatedDate />`
+- `<scms:LastUpdated />`
+- `<scms:UpdatedBy />`
+- `<scms:Username />`
+- `<scms:UserEmail />`
+- `<scms:UserRole />`
+- `<scms:IsAuthenticated />`
+- `<scms:CurrentUrl />`
+- `<scms:Year />`
+- `<scms:Menu orientation="horizontal|vertical" />`
+- `<scms:Content />`
+- `<scms:Content name="..." />`
+- `<scms:Breadcrumb />`
+- `<scms:LoginStatus />`
+- `<scms:TagCloud />`
+- `<scms:Search />`
+- `<scms:SocialLinks />`
+- `<scms:Privacy />`
+- `<scms:License />`
+
+
+### Module Tokens
+Inserted via layout or templates for dynamic features:
+- `<scms:BlogContent />`
+- `<scms:BlogCitation />`
+- `<scms:Slideshow layout="poster" />`
+- `<scms:Store:OnSaleItems />`
+- `<scms:Survey id="..." />`
+- `<scms:Comments pageId="..." />`
+- `<scms:Captcha />`
+- `<scms:ExternalLoginButtons />`
+- `<scms:Donate />`
+- `<scms:Map lat="..." lon="..." zoom="..." />`
+
+### Inline Tokens (via TinyMCE)
+- `<scms:Image src="..." mode="random|sequence" width="..." height="..." />`
+- `<scms:Audio src="..." autoplay="..." controls="..." />`
+- `<scms:Video src="..." autoplay="..." controls="..." width="..." height="..." />`
+- `<scms:Download file="..." label="..." />`
 
 ---
 
-## 🎨 Theming System (Summary)
-Themes in SCMS live under `/Themes/{ThemeName}` and control the layout and presentation of the site. Each theme includes:
-
-- `layout.cshtml`: Root layout structure
-- `partials/`: Shared view components like `header.cshtml`, `footer.cshtml`
-- `templates/`: Content-specific templates (e.g., `page.cshtml`, `blog.cshtml`)
-- `theme.config.json`: Metadata and default template reference
-- Optional `css/` and `js/` folders for theme-specific styling
-
-Themes can be uploaded as ZIPs and are extracted safely, enabling visual customization without touching backend code.
-
-For full details, see the [Theming.md](./Theming.md) document.
+## 🎨 Theming System
+- Themes live under `/Themes/{ThemeName}`
+- Responsive design is required
+- Theme controls full vs fixed width layout
+- `theme.config.json` contains metadata (description, preview, responsive flag)
+- CDN/local toggle for TinyMCE via admin setting
+- Admin theming support is deferred
 
 ---
 
 ## 📷 Media Management
-- Media types: images, video, audio, documents (e.g., zip/pdf)
-- Stored in `wwwroot/media/`
-- Managed through Responsive FileManager
-- Metadata saved in `MediaFile` table (type, size, duration, dimensions, etc.)
-- Gallery module reads from a configured media folder
-- File picker integrated with TinyMCE for uploads/links
+- Media types: image, video, audio, document
+- Metadata: filename, type, size, width/height, duration, tags
+- Media grouped via `MediaGroup` entity (with image preview)
+- Full media manager with file picker for TinyMCE
+- File uploads stored in `/wwwroot/media/`
 
 ---
 
 ## 🧭 Navigation & Menus
-- Menu structure stored in `NavigationLink` table
-- Initial implementation renders entire menu
-- Future support for menu groups (Main, Footer, Sidebar, etc.)
-- Drag-and-drop admin menu organizer planned
-- Breadcrumbs token (`<cms:Breadcrumbs />`) tracks location
+- Structured menus from database
+- Drag-and-drop menu manager
+- Menu tokens for theme integration
+- Multiple groups (Main, Footer, etc.) planned
 
 ---
 
 ## 📝 Blog System
-- Supports blog posts with title, content, tags, categories
-- Inline numbered citations (e.g., [1]) stored per post
-- Citation list rendered with `<cms:BlogCitation />`
-- Blog rendered via `<cms:Blog />`, `<cms:BlogContent />`
-- Filterable tag cloud with `<cms:TagCloud />`
+- Blog posts with title, content, categories, tags, and citations
+- Citation rendering: `<scms:BlogCitation />`
+- Display: `<scms:BlogContent />`
+- Tag cloud: `<scms:TagCloud />`
 
 ---
 
-## 🛍️ Future Store Module
-- Insertable store tokens like:
-  - `<cms:Store />`
-  - `<cms:Store:OnSaleItems />`
-  - `<cms:Store:Category name="X" />`
-- Future support for shopping cart, product pages
+## 🔍 Search
+- Full-text search (SQLite FTS5)
+- Token: `<scms:Search />`
+- Results scored for relevance
 
 ---
 
-## 🔎 Search
-- Full-text search using SQLite FTS5
-- `<cms:SearchBar />` token injects search UI
-- Search results use relevance scoring (bm25)
+## 🛒 Store Module (Planned)
+- Sell digital or physical items
+- Tokens for embedding featured items or categories
+
+---
+
+## 🧩 Modules Overview
+
+### Core (Built-In)
+- **Media Module** — Powers inline media tokens and gallery features
+
+### Planned Modules
+- **Maps Module** — Interactive map pins + `<scms:Map />` token
+- **Survey Module** — Poll and survey embedding + analytics
+- **External Authentication** — OAuth, SAML, OpenID + login tokens
+- **Comment Module** — Threaded comments, votes, emoji reactions
+- **Captcha Module** — Required for guest content; supports reCAPTCHA, hCaptcha
+- **Storefront Module** — Embeddable store listings and cart (future)
+- **Messages Module** — Direct messages and @username mentions
+- **Notices Module** — Sticky notices, auto-expire or user-dismissable
+- **Donations Module** — Ko-fi, Patreon, PayPal support
+- **Forums Module** — Threaded discussion with voting, sticky support (potential)
+- **2FA Module** — Two-Factor Auth via TOTP or Passkeys
+- **Forms Module** — Custom form builder and submissions
+- **Feedback Module** — Lightweight feedback collection
+- **Ratings Module** — Integrated content ratings and voting
+- **Bookmarks/Links Module** — Public/private links, categories, and browser import
 
 ---
 
@@ -128,24 +155,30 @@ For full details, see the [Theming.md](./Theming.md) document.
 - Page manager
 - Media manager
 - Blog manager
-- Navigation/menu editor (drag-and-drop)
+- Navigation/menu editor
 - Social media settings
-- General system settings
+- System settings (signup toggle, TinyMCE license key, TinyMCE source)
 
 ---
 
-## 🔒 Security & Access
-- Role-based access control via Identity
-- Pages can be marked Public or Members Only
-- Editor/admin privileges scoped to roles
+## 🔐 Security & Access
+- ASP.NET Identity-based role management
+- Private vs Public page visibility
+- 2FA support module with passkeys
+- External login support via module
 
 ---
 
-## 🧰 Portable & Local Dev
-- Fully Dockerized
-- Runs locally with Docker Compose
-- Deploy by copying SQLite DB and `/media/` folder
+## 🔄 Portability & Deployment
+- Dockerized from day one
+- Easily movable via DB + media folders
+- Lightweight and portable
 - Suitable for hobbyists and small orgs
+---
+
+## 🔧 Extensibility & Modularity
+- Module system with self-registration and EF migrations
+- Future roadmap includes module store/registry for versioning and upgrades
 
 ---
 
