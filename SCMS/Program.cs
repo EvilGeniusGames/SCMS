@@ -1,6 +1,8 @@
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SCMS.Data;
+using SCMS.Interfaces;
+using SCMS.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +20,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 
 // Register MVC and Razor Pages
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddScoped<IPageService, PageService>();
 var app = builder.Build();
 
 // Seed admin user from environment variables if enabled
@@ -38,15 +40,46 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 
-// Set up endpoint routing
+// 🧩 Custom CMS Route
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-app.MapRazorPages();
+    pattern: "{slug?}",
+    defaults: new { controller = "Page", action = "RenderPage" });
+
+EnsureThemeAssets();
 
 app.Run();
 
+void EnsureThemeAssets()
+{
+    var sourcePath = Path.Combine(Directory.GetCurrentDirectory(), "Themes", "default");
+    var targetPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Themes", "default");
 
+    var assetFolders = new[] { "css", "js", "images", "fonts" };
+
+    foreach (var folder in assetFolders)
+    {
+        var srcDir = Path.Combine(sourcePath, folder);
+        var tgtDir = Path.Combine(targetPath, folder);
+
+        if (!Directory.Exists(tgtDir))
+            Directory.CreateDirectory(tgtDir);
+
+        if (Directory.Exists(srcDir))
+        {
+            foreach (var file in Directory.GetFiles(srcDir))
+            {
+                var fileName = Path.GetFileName(file);
+                var destFile = Path.Combine(tgtDir, fileName);
+
+                if (!File.Exists(destFile))
+                {
+                    File.Copy(file, destFile);
+                }
+            }
+        }
+    }
+}
 // Seeds an admin user based on environment variables
 static async Task SeedAdminUserAsync(WebApplication app)
 {

@@ -45,19 +45,19 @@ namespace SCMS.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "e01a9087-f6e9-41d1-9c7d-54f4a40b7f8a",
+                            Id = "21f07b18-2fa9-4dd4-af05-ffc09f664e2f",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "c98496d2-b649-44d2-badd-d667690a33dc",
+                            Id = "c16b2241-1c29-4c4c-8cef-acc01af12376",
                             Name = "Editor",
                             NormalizedName = "EDITOR"
                         },
                         new
                         {
-                            Id = "dcec7256-e937-448c-ac49-06cd97906a43",
+                            Id = "c368209b-1e55-4a08-92cf-20b2ddc2845e",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -233,6 +233,237 @@ namespace SCMS.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("SCMS.Data.PageContent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("HtmlContent")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("LastUpdated")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("MetaDescription")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("MetaKeywords")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PageKey")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TemplateKey")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Visibility")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PageContents");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            HtmlContent = "<p>This is your first SCMS page. Edit it in the admin panel.</p>",
+                            LastUpdated = new DateTime(2025, 4, 24, 18, 33, 21, 757, DateTimeKind.Utc).AddTicks(7880),
+                            PageKey = "home",
+                            TemplateKey = "Display",
+                            Title = "Welcome",
+                            Visibility = "Public"
+                        });
+                });
+
+            modelBuilder.Entity("SCMS.Data.SiteSettings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ContactAddress")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ContactEmail")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ContactPhone")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Logo")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SiteName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Tagline")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ThemeId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ThemeId");
+
+                    b.ToTable("SiteSettings");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            SiteName = "SCMS Site",
+                            Tagline = "Powered by SCMS",
+                            ThemeId = 1
+                        });
+                });
+
+            modelBuilder.Entity("SCMS.Data.SocialMedia", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("IconClass")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("SiteSettingsId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SiteSettingsId");
+
+                    b.ToTable("SocialMedia");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            IconClass = "fab fa-facebook-f",
+                            Name = "Facebook",
+                            SiteSettingsId = 0,
+                            Url = "#"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            IconClass = "fab fa-twitter",
+                            Name = "Twitter",
+                            SiteSettingsId = 0,
+                            Url = "#"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            IconClass = "fab fa-instagram",
+                            Name = "Instagram",
+                            SiteSettingsId = 0,
+                            Url = "#"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            IconClass = "fab fa-youtube",
+                            Name = "YouTube",
+                            SiteSettingsId = 0,
+                            Url = "#"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            IconClass = "fab fa-linkedin-in",
+                            Name = "LinkedIn",
+                            SiteSettingsId = 0,
+                            Url = "#"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            IconClass = "fab fa-tiktok",
+                            Name = "TikTok",
+                            SiteSettingsId = 0,
+                            Url = "#"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            IconClass = "fab fa-pinterest-p",
+                            Name = "Pinterest",
+                            SiteSettingsId = 0,
+                            Url = "#"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            IconClass = "fas fa-globe",
+                            Name = "Bluesky",
+                            SiteSettingsId = 0,
+                            Url = "#"
+                        });
+                });
+
+            modelBuilder.Entity("SCMS.Data.ThemeSetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PreviewImage")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("SetOn")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ThemeSettings");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Clean layout with light styling",
+                            DisplayName = "Default Theme",
+                            Name = "default",
+                            PreviewImage = "/Themes/Default/preview.png",
+                            SetOn = new DateTime(2025, 4, 24, 18, 33, 21, 757, DateTimeKind.Utc).AddTicks(7835)
+                        });
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -282,6 +513,33 @@ namespace SCMS.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("SCMS.Data.SiteSettings", b =>
+                {
+                    b.HasOne("SCMS.Data.ThemeSetting", "Theme")
+                        .WithMany()
+                        .HasForeignKey("ThemeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Theme");
+                });
+
+            modelBuilder.Entity("SCMS.Data.SocialMedia", b =>
+                {
+                    b.HasOne("SCMS.Data.SiteSettings", "SiteSettings")
+                        .WithMany("SocialLinks")
+                        .HasForeignKey("SiteSettingsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SiteSettings");
+                });
+
+            modelBuilder.Entity("SCMS.Data.SiteSettings", b =>
+                {
+                    b.Navigation("SocialLinks");
                 });
 #pragma warning restore 612, 618
         }

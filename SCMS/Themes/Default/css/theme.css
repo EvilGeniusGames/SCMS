@@ -1,0 +1,43 @@
+/* SCMS Theme Debug Style */
+
+body {
+    margin: 0;
+    font-family: system-ui, sans-serif;
+}
+
+.theme-header {
+    background-color: #cce5ff;
+    padding: 1rem;
+    border-bottom: 2px solid #004085;
+}
+
+.theme-footer {
+    background-color: #d4edda;
+    padding: 1rem;
+    border-top: 2px solid #155724;
+    text-align: center;
+    font-size: 0.875rem;
+    color: #000; /* ensure text is visible */
+}
+.footer-meta {
+    margin-top: 1rem;
+    font-size: 0.875rem;
+    color: #333;
+}
+
+
+.theme-content {
+    background-color: #fff3cd;
+    padding: 2rem;
+    border: 2px dashed #856404;
+    min-height: 400px;
+}
+
+.logo {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+nav {
+    margin-left: 2rem;
+}

@@ -12,6 +12,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Themes\Default\layout.html" />
+    <Content Include="Themes\Default\partials\footer.html" />
+    <Content Include="Themes\Default\partials\header.html" />
+    <Content Include="Themes\Default\templates\page.html" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.15" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.15" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.15" />
@@ -25,9 +32,7 @@
 
   <ItemGroup>
     <Folder Include="Database\" />
-    <Folder Include="Themes\Default\css\" />
     <Folder Include="Themes\Default\js\" />
-    <Folder Include="Themes\Default\templates\" />
   </ItemGroup>
 
 </Project>

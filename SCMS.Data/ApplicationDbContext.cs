@@ -73,10 +73,16 @@ namespace SCMS.Data
                 new SocialMedia { Id = 8, Name = "Bluesky", Url = "#", IconClass = "fas fa-globe" } // Generic globe icon
             );
 
-            // TODO: Add CMS-specific model configurations here
+            modelBuilder.Entity<PageContent>().HasData(new PageContent
+            {
+                Id = 1,
+                PageKey = "home",
+                Title = "Welcome",
+                HtmlContent = "<p>This is your first SCMS page. Edit it in the admin panel.</p>",
+                LastUpdated = DateTime.UtcNow
+            });
         }
 
-        // TODO: Define your DbSets here (e.g. Pages, MediaFiles, Posts, etc.)
         public DbSet<ThemeSetting> ThemeSettings { get; set; }
         public DbSet<SiteSettings> SiteSettings { get; set; }
         public DbSet<PageContent> PageContents { get; set; }

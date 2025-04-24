@@ -2,5 +2,7 @@
   "name": "default",
   "displayName": "Default Theme",
   "description": "Clean layout with light styling",
-  "previewImage": "/Themes/Default/preview.png"
+  "previewImage": "/Themes/default/preview.png",
+  "defaultTemplate": "page.html",
+  "layout": "layout.html"
 }

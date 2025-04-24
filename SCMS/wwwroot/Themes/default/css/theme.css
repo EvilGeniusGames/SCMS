@@ -1,0 +1,37 @@
+/* SCMS Theme Debug Style */
+
+body {
+    margin: 0;
+    font-family: system-ui, sans-serif;
+}
+
+header {
+    background-color: #cce5ff; /* light blue */
+    padding: 1rem;
+    border-bottom: 2px solid #004085;
+}
+
+footer {
+    background-color: #155724; /* light green */
+    padding: 1rem;
+    border-top: 2px solid #155724;
+    text-align: center;
+    font-size: 0.875rem;
+    color: #155724;
+}
+
+main {
+    background-color: #fff3cd; /* light yellow */
+    padding: 2rem;
+    border: 2px dashed #856404;
+    min-height: 400px;
+}
+
+.logo {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+nav {
+    margin-left: 2rem;
+}
