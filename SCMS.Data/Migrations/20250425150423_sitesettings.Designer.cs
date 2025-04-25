@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SCMS.Data;
 
@@ -10,9 +11,11 @@ using SCMS.Data;
 namespace SCMS.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250425150423_sitesettings")]
+    partial class sitesettings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.15");
@@ -45,19 +48,19 @@ namespace SCMS.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "34812801-dcf5-4157-8f25-aeebe9948aed",
+                            Id = "93766676-605f-4c15-b7e8-df3f76c891ed",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "27870e25-7a82-400c-b54d-a91324950c32",
+                            Id = "47cf3423-6cda-4c0c-a55b-201481281e36",
                             Name = "Editor",
                             NormalizedName = "EDITOR"
                         },
                         new
                         {
-                            Id = "a1df3403-455a-415e-a8bb-f89981e6ff45",
+                            Id = "5f5f01f6-2649-4b7c-ba32-c78a638be20c",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -233,53 +236,6 @@ namespace SCMS.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("SCMS.Data.MenuItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsVisible")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("MenuGroup")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("PageContentId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("ParentId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Url")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PageContentId");
-
-                    b.ToTable("MenuItems");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            IsVisible = true,
-                            MenuGroup = "Main",
-                            Order = 0,
-                            PageContentId = 1,
-                            Title = "Home"
-                        });
-                });
-
             modelBuilder.Entity("SCMS.Data.PageContent", b =>
                 {
                     b.Property<int>("Id")
@@ -326,8 +282,8 @@ namespace SCMS.Data.Migrations
                         new
                         {
                             Id = 1,
-                            HtmlContent = "\r\n                    <p>This is your first SCMS page. Edit it in the admin panel.</p>\r\n                    <form action=\"/seed-sample-content\" method=\"post\">\r\n                        <button type=\"submit\" class=\"btn btn-warning\">Seed Sample Content</button>\r\n                    </form>",
-                            LastUpdated = new DateTime(2025, 4, 25, 19, 34, 14, 163, DateTimeKind.Utc).AddTicks(6634),
+                            HtmlContent = "<p>This is your first SCMS page. Edit it in the admin panel.</p>",
+                            LastUpdated = new DateTime(2025, 4, 25, 15, 4, 23, 626, DateTimeKind.Utc).AddTicks(6435),
                             PageKey = "home",
                             TemplateKey = "Display",
                             Title = "Welcome",
@@ -514,7 +470,7 @@ namespace SCMS.Data.Migrations
                             Favicon = "favicon.ico",
                             Name = "default",
                             PreviewImage = "/Themes/Default/preview.png",
-                            SetOn = new DateTime(2025, 4, 25, 19, 34, 14, 163, DateTimeKind.Utc).AddTicks(6584)
+                            SetOn = new DateTime(2025, 4, 25, 15, 4, 23, 626, DateTimeKind.Utc).AddTicks(6378)
                         });
                 });
 
@@ -567,15 +523,6 @@ namespace SCMS.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("SCMS.Data.MenuItem", b =>
-                {
-                    b.HasOne("SCMS.Data.PageContent", "PageContent")
-                        .WithMany()
-                        .HasForeignKey("PageContentId");
-
-                    b.Navigation("PageContent");
                 });
 
             modelBuilder.Entity("SCMS.Data.SiteSettings", b =>

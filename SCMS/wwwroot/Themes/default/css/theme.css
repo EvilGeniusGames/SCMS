@@ -1,37 +1,107 @@
-/* SCMS Theme Debug Style */
-
+﻿/* Reset & base */
 body {
     margin: 0;
     font-family: system-ui, sans-serif;
+    background-color: #f5f5f5;
+    color: #000;
 }
 
-header {
-    background-color: #cce5ff; /* light blue */
+/* Header bar */
+.theme-header {
+    background-color: #cce5ff;
     padding: 1rem;
-    border-bottom: 2px solid #004085;
+    border-bottom: 1px solid #004085;
 }
 
-footer {
-    background-color: #155724; /* light green */
-    padding: 1rem;
-    border-top: 2px solid #155724;
-    text-align: center;
-    font-size: 0.875rem;
-    color: #155724;
+    .theme-header .d-flex {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    .theme-header .logo img {
+        display: block;
+        max-height: 100px;
+        height: auto;
+    }
+
+.login-status {
+    font-size: 0.9rem;
+    white-space: nowrap;
+    text-align: right;
 }
 
-main {
-    background-color: #fff3cd; /* light yellow */
-    padding: 2rem;
-    border: 2px dashed #856404;
-    min-height: 400px;
-}
-
-.logo {
-    font-weight: bold;
-    font-size: 1.5rem;
-}
-
+/* Navigation bar */
 nav {
-    margin-left: 2rem;
+    background-color: #343a40;
+    padding: 0.5rem;
+    color: #f8f9fa;
+}
+
+    nav a {
+        color: #f8f9fa;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+/* Main nav menu styling */
+.nav-menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 1.5rem;
+}
+
+    .nav-menu li {
+        position: relative;
+    }
+
+    .nav-menu a {
+        display: block;
+        padding: 0.5rem 1rem;
+    }
+
+    /* Dropdown submenu */
+    .nav-menu .submenu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        list-style: none;
+        background-color: #343a40;
+        padding: 0;
+        margin: 0;
+        min-width: 180px;
+        z-index: 999;
+    }
+
+    .nav-menu li:hover .submenu {
+        display: block;
+    }
+
+.submenu li a {
+    padding: 0.5rem 1rem;
+    display: block;
+}
+
+/* Main content */
+.theme-content {
+    padding: 2rem;
+    min-height: 400px;
+    background-color: #ffffff;
+}
+
+/* Footer */
+.theme-footer {
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.875rem;
+    color: #000;
 }

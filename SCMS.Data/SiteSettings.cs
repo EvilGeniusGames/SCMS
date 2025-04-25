@@ -11,6 +11,7 @@ namespace SCMS.Data
         public string? ContactEmail { get; set; }
         public string? ContactPhone { get; set; }
         public string? ContactAddress { get; set; }
+        public string? Copyright { get; set; }
 
         // Social links (1-to-many)
         public ICollection<SocialMedia> SocialLinks { get; set; } = new List<SocialMedia>();

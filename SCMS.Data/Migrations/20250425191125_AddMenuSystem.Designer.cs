@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SCMS.Data;
 
@@ -10,9 +11,11 @@ using SCMS.Data;
 namespace SCMS.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250425191125_AddMenuSystem")]
+    partial class AddMenuSystem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.15");
@@ -45,19 +48,19 @@ namespace SCMS.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "34812801-dcf5-4157-8f25-aeebe9948aed",
+                            Id = "8fb905cb-5e9a-46d5-ba4f-3a62a645cf1d",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "27870e25-7a82-400c-b54d-a91324950c32",
+                            Id = "13547119-eab2-4a1b-ac55-3034c77677c2",
                             Name = "Editor",
                             NormalizedName = "EDITOR"
                         },
                         new
                         {
-                            Id = "a1df3403-455a-415e-a8bb-f89981e6ff45",
+                            Id = "ef0e0fad-f86d-4238-864e-9f31c70e8d00",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -326,8 +329,8 @@ namespace SCMS.Data.Migrations
                         new
                         {
                             Id = 1,
-                            HtmlContent = "\r\n                    <p>This is your first SCMS page. Edit it in the admin panel.</p>\r\n                    <form action=\"/seed-sample-content\" method=\"post\">\r\n                        <button type=\"submit\" class=\"btn btn-warning\">Seed Sample Content</button>\r\n                    </form>",
-                            LastUpdated = new DateTime(2025, 4, 25, 19, 34, 14, 163, DateTimeKind.Utc).AddTicks(6634),
+                            HtmlContent = "<p>This is your first SCMS page. Edit it in the admin panel.</p>",
+                            LastUpdated = new DateTime(2025, 4, 25, 19, 11, 25, 384, DateTimeKind.Utc).AddTicks(4535),
                             PageKey = "home",
                             TemplateKey = "Display",
                             Title = "Welcome",
@@ -514,7 +517,7 @@ namespace SCMS.Data.Migrations
                             Favicon = "favicon.ico",
                             Name = "default",
                             PreviewImage = "/Themes/Default/preview.png",
-                            SetOn = new DateTime(2025, 4, 25, 19, 34, 14, 163, DateTimeKind.Utc).AddTicks(6584)
+                            SetOn = new DateTime(2025, 4, 25, 19, 11, 25, 384, DateTimeKind.Utc).AddTicks(4487)
                         });
                 });
 

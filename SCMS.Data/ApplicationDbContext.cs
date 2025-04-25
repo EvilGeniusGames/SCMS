@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SCMS.Data.Configuration;
+using SCMS.Data;
 
 namespace SCMS.Data
 {
@@ -78,13 +79,30 @@ namespace SCMS.Data
                 Id = 1,
                 PageKey = "home",
                 Title = "Welcome",
-                HtmlContent = "<p>This is your first SCMS page. Edit it in the admin panel.</p>",
+                HtmlContent = @"
+                    <p>This is your first SCMS page. Edit it in the admin panel.</p>
+                    <form action=""/seed-sample-content"" method=""post"">
+                        <button type=""submit"" class=""btn btn-warning"">Seed Sample Content</button>
+                    </form>",
                 LastUpdated = DateTime.UtcNow
+            });
+
+            modelBuilder.Entity<MenuItem>().HasData(new MenuItem
+            {
+                Id = 1,
+                ParentId = null,
+                Title = "Home",
+                Url = null,
+                PageContentId = 1, // Assuming the first PageContent entry is the homepage
+                MenuGroup = "Main",
+                Order = 0,
+                IsVisible = true
             });
         }
 
         public DbSet<ThemeSetting> ThemeSettings { get; set; }
         public DbSet<SiteSettings> SiteSettings { get; set; }
         public DbSet<PageContent> PageContents { get; set; }
+        public DbSet<MenuItem> MenuItems { get; set; }
     }
 }
