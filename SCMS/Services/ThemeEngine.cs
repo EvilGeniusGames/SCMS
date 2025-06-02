@@ -5,7 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using SCMS.Data;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
-using SCMS.Classes; // 👈 new import for MenuBuilder
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.DependencyInjection;
+using SCMS.Classes; // 👈 MenuBuilder
+using Microsoft.AspNetCore.Antiforgery;
 
 namespace SCMS.Services
 {
@@ -34,9 +37,16 @@ namespace SCMS.Services
 
             var tagline = siteSettings?.Tagline ?? "Site Powered by SCMS";
 
+            var bodyContent = page.HtmlContent ?? "";
+
+            // Inject TempData["Error"] if it exists
+            var tempData = HttpContextAccessor?.HttpContext?.RequestServices
+                .GetService<ITempDataDictionaryFactory>()
+                ?.GetTempData(HttpContextAccessor.HttpContext);
+
             var body = template
                 .Replace("<cms:PageTitle />", page.Title ?? "")
-                .Replace("<cms:Content />", page.HtmlContent ?? "");
+                .Replace("<cms:Content />", bodyContent);
 
             var result = layout
                 .Replace("<cms:Header />", header)
@@ -47,15 +57,24 @@ namespace SCMS.Services
                 .Replace("<cms:Copyright />", copyright)
                 .Replace("<cms:Tagline />", tagline);
 
-            // Handle dynamic login/logout button
             var user = HttpContextAccessor?.HttpContext?.User;
             bool isAuthenticated = user?.Identity?.IsAuthenticated ?? false;
             string loginStatusHtml = isAuthenticated
-                ? "<div class=\"login-status\"><a href=\"/Account/Logout\">Logout</a></div>"
-                : "<div class=\"login-status\"><a href=\"/Account/Login\">Login</a></div>";
+                ? "<div class=\"login-status\"><a href=\"/portal-logout\">Logout</a></div>"
+                : "<div class=\"login-status\"><a href=\"/portal-access\">Login</a></div>";
             result = result.Replace("<cms:LoginStatus />", loginStatusHtml);
 
-            // Replace menu token with generated menu HTML
+            // Replace <cms:ErrorMessage /> with alert if TempData["Error"] exists
+            if (result.Contains("<cms:ErrorMessage />"))
+            {
+                var err = tempData?["Error"] as string;
+                var errorHtml = !string.IsNullOrEmpty(err)
+                    ? $"<div class='alert alert-danger'>{err}</div>"
+                    : "";
+                result = result.Replace("<cms:ErrorMessage />", errorHtml);
+            }
+
+            // Handle <cms:Menu />
             var menuRegex = new Regex(
                 @"<cms:Menu\s+(?=.*orientation=""(?<orientation>\w+)""\s*)(?=.*group=""(?<group>[^""]+)""\s*).*?\/?>",
                 RegexOptions.IgnoreCase
@@ -68,7 +87,7 @@ namespace SCMS.Services
                 return MenuBuilder.GenerateMenuHtml(db, group, orientation);
             });
 
-            // Replace <cms:SiteLogo height="..."/> with an image tag
+            // Handle <cms:SiteLogo height="..." />
             var logoRegex = new Regex(@"<cms:SiteLogo(?:\s+height\s*=\s*""(?<height>\d+)"")?\s*\/>");
             result = logoRegex.Replace(result, match =>
             {
@@ -76,12 +95,21 @@ namespace SCMS.Services
                 return $"<img src=\"{logoUrl}\" alt=\"Site Logo\" style=\"max-height: {height}px;\">";
             });
 
-            // Highlight unknown tokens
+            // Catch unknown tokens
             result = Regex.Replace(result, @"<cms:[^>]+\/>", match =>
             {
                 var safeToken = match.Value.Replace("<", "(").Replace(">", ")");
                 return $"<span style='color: red; font-weight: bold;'>[UNKNOWN TOKEN: {safeToken}]</span>";
             });
+
+            // Handle {{ANTIFORGERY_TOKEN}} replacement
+            if (result.Contains("{{ANTIFORGERY_TOKEN}}"))
+            {
+                var antiforgery = HttpContextAccessor?.HttpContext?.RequestServices.GetService<IAntiforgery>();
+                var tokenSet = antiforgery?.GetAndStoreTokens(HttpContextAccessor.HttpContext);
+                var tokenValue = tokenSet?.RequestToken ?? "";
+                result = result.Replace("{{ANTIFORGERY_TOKEN}}", tokenValue);
+            }
 
             return result;
         }

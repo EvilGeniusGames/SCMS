@@ -6,27 +6,31 @@
     <cms:Favicon />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
           rel="stylesheet"
-          integrity="sha384-rbsA2VBKQJf2a4pU04z4M6QmXkkKv1K2e5tFf3cgJo0ieGizqPLFornZyZ3C3zq1"
-          crossorigin="anonymous" />
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+          crossorigin="anonymous">
     <link rel="stylesheet" href="/Themes/default/css/theme.css">
 </head>
 <body>
 
-    <header class="theme-header">
-        <cms:Header />
-    </header>
+    <!-- Header Partial -->
+    <cms:Header />
 
-    <nav class="nav-menu">
-        <cms:Menu orientation="Horizontal" group="Main"/>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <cms:Menu orientation="horizontal" group="Main" />
+        </div>
     </nav>
 
-    <main class="theme-content">
+    <!-- Main Page Content -->
+    <main class="container my-5">
         <cms:Content />
     </main>
 
-    <footer class="theme-footer">
-        <cms:Footer />
-    </footer>
+    <!-- Footer Partial -->
+    <cms:Footer />
+    <!-- Javascript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

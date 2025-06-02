@@ -17,15 +17,15 @@ All themes are stored in `/Themes/{ThemeName}/`. A typical theme layout:
 ```
 /Themes/
   └── default/
-      ├── layout.cshtml
+      ├── layout.html
       ├── theme.config.json
       ├── partials/
-      │   ├── header.cshtml
-      │   └── footer.cshtml
+      │   ├── header.html
+      │   └── footer.html
       ├── templates/
-      │   ├── page.cshtml
-      │   ├── blog.cshtml
-      │   └── post.cshtml
+      │   ├── page.html
+      │   ├── blog.html
+      │   └── post.html
       ├── css/
       │   └── theme.css
       ├── js/
@@ -48,8 +48,8 @@ All themes are stored in `/Themes/{ThemeName}/`. A typical theme layout:
   "author": "SCMS Team",
   "description": "A simple starter theme with Bootstrap layout.",
   "previewImage": "/Themes/default/images/preview.png",
-  "defaultTemplate": "page.cshtml",
-  "layout": "layout.cshtml"
+  "defaultTemplate": "page.html",
+  "layout": "layout.html"
 }
 ```
 
@@ -62,7 +62,7 @@ All themes are stored in `/Themes/{ThemeName}/`. A typical theme layout:
 - `layout`: Main layout file  
 
 Other files:
-- **layout.cshtml**: Base layout for the entire site  
+- **layout.html**: Base layout for the entire site  
 - **partials/**: Shared components like headers and footers  
 - **templates/**: Content-specific views  
 - **css/** and **js/**: Theme-specific styling and scripts  
@@ -80,22 +80,22 @@ Themes are activated via the Admin UI or configuration and used to resolve view 
 Views are resolved from:
 
 ```csharp
-/Themes/{ActiveTheme}/layout.cshtml
-/Themes/{ActiveTheme}/partials/{PartialName}.cshtml
-/Themes/{ActiveTheme}/templates/{TemplateName}.cshtml
+/Themes/{ActiveTheme}/layout.html
+/Themes/{ActiveTheme}/partials/{PartialName}.html
+/Themes/{ActiveTheme}/templates/{TemplateName}.html
 ```
 
 ---
 
 ## Theme Installation
 
-Upload `.zip` packages to install themes. They extract to `/Themes/{FolderName}` and allow `.cshtml`, `.json`, `.css`, `.js` only.
+Upload `.zip` packages to install themes. They extract to `/Themes/{FolderName}` and allow `.html`, `.json`, `.css`, `.js` only.
 
 ---
 
 ## Using External Frameworks (e.g., Bootstrap or JavaScript Libraries)
 
-Include CSS via CDN or place JS frameworks in `/js/` and reference them in `layout.cshtml`:
+Include CSS via CDN or place JS frameworks in `/js/` and reference them in `layout.html`:
 
 ```html
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -128,7 +128,7 @@ Include CSS via CDN or place JS frameworks in `/js/` and reference them in `layo
 
 ## Designer Tokens
 
-Use in `.cshtml` files to inject dynamic data:
+Use in `.html` files to inject dynamic data:
 
 - `<cms:LoginStatus />` – Login/logout button. **Placement determines where login UI appears**  
 - `<cms:SiteLogo />`  
@@ -163,7 +163,7 @@ Tokens like `<cms:SiteLogo />` are rendered after Razor view execution. They are
 
 ## First Theme Example: Simple One-Page Theme
 
-### partials/header.cshtml
+### partials/header.html
 
 ```html
 <header>
@@ -172,7 +172,7 @@ Tokens like `<cms:SiteLogo />` are rendered after Razor view execution. They are
 </header>
 ```
 
-### partials/footer.cshtml
+### partials/footer.html
 
 ```html
 <footer>
@@ -180,7 +180,7 @@ Tokens like `<cms:SiteLogo />` are rendered after Razor view execution. They are
 </footer>
 ```
 
-### layout.cshtml
+### layout.html
 
 ```html
 <!DOCTYPE html>

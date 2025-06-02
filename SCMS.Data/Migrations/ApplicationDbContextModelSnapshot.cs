@@ -45,19 +45,19 @@ namespace SCMS.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "34812801-dcf5-4157-8f25-aeebe9948aed",
+                            Id = "3c02aaab-c3b0-4e75-8dcc-ab6836237572",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "27870e25-7a82-400c-b54d-a91324950c32",
+                            Id = "3c57bed7-e68a-45ae-9b9e-b3a0e4eaa2b6",
                             Name = "Editor",
                             NormalizedName = "EDITOR"
                         },
                         new
                         {
-                            Id = "a1df3403-455a-415e-a8bb-f89981e6ff45",
+                            Id = "1973a127-9431-4bba-87a7-a0abe88cf796",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -86,7 +86,86 @@ namespace SCMS.Data.Migrations
                     b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RoleId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("SCMS.Data.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
@@ -110,6 +189,9 @@ namespace SCMS.Data.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("MustChangePassword")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -148,89 +230,6 @@ namespace SCMS.Data.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("ClaimType")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ClaimValue")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AspNetUserClaims", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
-                {
-                    b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ProviderKey")
-                        .HasMaxLength(128)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("LoginProvider", "ProviderKey");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AspNetUserLogins", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("RoleId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("UserId", "RoleId");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("AspNetUserRoles", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(128)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Value")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("UserId", "LoginProvider", "Name");
-
-                    b.ToTable("AspNetUserTokens", (string)null);
                 });
 
             modelBuilder.Entity("SCMS.Data.MenuItem", b =>
@@ -326,11 +325,71 @@ namespace SCMS.Data.Migrations
                         new
                         {
                             Id = 1,
-                            HtmlContent = "\r\n                    <p>This is your first SCMS page. Edit it in the admin panel.</p>\r\n                    <form action=\"/seed-sample-content\" method=\"post\">\r\n                        <button type=\"submit\" class=\"btn btn-warning\">Seed Sample Content</button>\r\n                    </form>",
-                            LastUpdated = new DateTime(2025, 4, 25, 19, 34, 14, 163, DateTimeKind.Utc).AddTicks(6634),
+                            HtmlContent = "\r\n                    <h1 class=\"display-4 mb-4\">Welcome</h1>\r\n                    <p class=\"lead mb-4\">This is your first SCMS page. Edit it in the admin panel.</p>\r\n                    <form action=\"/seed-sample-content\" method=\"post\">\r\n                        <button type=\"submit\" class=\"btn btn-warning\">Seed Sample Content</button>\r\n                    </form>",
+                            LastUpdated = new DateTime(2025, 6, 2, 18, 56, 23, 525, DateTimeKind.Utc).AddTicks(6015),
                             PageKey = "home",
                             TemplateKey = "Display",
                             Title = "Welcome",
+                            Visibility = "Public"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            HtmlContent = "\r\n                    <div class=\"d-flex align-items-center justify-content-center\">\r\n                        <div class=\"card shadow p-4\" style=\"max-width: 400px; width: 100%;\">\r\n                            <h2 class=\"text-center mb-4\">Login</h2>\r\n                            <form action=\"/Identity/Account/Login\" method=\"post\">\r\n                                <input name=\"__RequestVerificationToken\" type=\"hidden\" value=\"{{ANTIFORGERY_TOKEN}}\" />\r\n                                <div class=\"mb-3\">\r\n                                    <label for=\"email\" class=\"form-label\">Email address</label>\r\n                                    <input type=\"email\" class=\"form-control\" id=\"email\" name=\"Input.Email\" required />\r\n                                </div>\r\n                                <div class=\"mb-3\">\r\n                                    <label for=\"password\" class=\"form-label\">Password</label>\r\n                                    <input type=\"password\" class=\"form-control\" id=\"password\" name=\"Input.Password\" required />\r\n                                </div>\r\n                                <div class=\"mb-3 form-check\">\r\n                                    <input type=\"checkbox\" class=\"form-check-input\" id=\"rememberMe\" name=\"Input.RememberMe\" />\r\n                                    <label class=\"form-check-label\" for=\"rememberMe\">Remember Me</label>\r\n                                </div>\r\n                                <button type=\"submit\" class=\"btn btn-primary w-100\">Login</button>\r\n                            </form>\r\n                            <div class=\"mt-3 text-center\">\r\n                                <a href=\"/forgot-password\">Forgot Password?</a><br />\r\n                                <a href=\"/register\">Don't have an account? Register</a>\r\n                            </div>\r\n                        </div>\r\n                    </div>",
+                            LastUpdated = new DateTime(2025, 6, 2, 18, 56, 23, 525, DateTimeKind.Utc).AddTicks(6039),
+                            PageKey = "portal-access",
+                            TemplateKey = "Display",
+                            Title = "Login",
+                            Visibility = "Public"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            HtmlContent = "\r\n                <div class=\"container mt-5 text-center\">\r\n                    <h2>You have been logged out</h2>\r\n                    <p>Thank you for visiting. See you again soon!</p>\r\n                    <a href=\"/\" class=\"btn btn-primary mt-3\">Return Home</a>\r\n                </div>",
+                            LastUpdated = new DateTime(2025, 6, 2, 18, 56, 23, 525, DateTimeKind.Utc).AddTicks(6040),
+                            PageKey = "portal-logout",
+                            TemplateKey = "Display",
+                            Title = "Logout",
+                            Visibility = "Public"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            HtmlContent = "\r\n                    <div class=\"container mt-5\">\r\n                        <h2 class=\"mb-4\">Register</h2>\r\n                        <form action=\"/Identity/Account/Register\" method=\"post\">\r\n                            <div class=\"mb-3\">\r\n                                <label for=\"Input_Email\" class=\"form-label\">Email address</label>\r\n                                <input type=\"email\" class=\"form-control\" id=\"Input_Email\" name=\"Input.Email\" required />\r\n                            </div>\r\n                            <div class=\"mb-3\">\r\n                                <label for=\"Input_Password\" class=\"form-label\">Password</label>\r\n                                <input type=\"password\" class=\"form-control\" id=\"Input_Password\" name=\"Input.Password\" required />\r\n                            </div>\r\n                            <div class=\"mb-3\">\r\n                                <label for=\"Input_ConfirmPassword\" class=\"form-label\">Confirm Password</label>\r\n                                <input type=\"password\" class=\"form-control\" id=\"Input_ConfirmPassword\" name=\"Input.ConfirmPassword\" required />\r\n                            </div>\r\n                            <button type=\"submit\" class=\"btn btn-primary\">Register</button>\r\n                        </form>\r\n                        <div class=\"mt-3\">\r\n                            <a href=\"/Identity/Account/Login\">Already have an account? Login here</a>\r\n                        </div>\r\n                    </div>",
+                            LastUpdated = new DateTime(2025, 6, 2, 18, 56, 23, 525, DateTimeKind.Utc).AddTicks(6041),
+                            PageKey = "register",
+                            TemplateKey = "Display",
+                            Title = "Register",
+                            Visibility = "Public"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            HtmlContent = "\r\n                <div class=\"container mt-5\">\r\n                    <h2 class=\"mb-4\">Forgot your password?</h2>\r\n                    <form action=\"/Identity/Account/ForgotPassword\" method=\"post\">\r\n                        <div class=\"mb-3\">\r\n                            <label for=\"Input_Email\" class=\"form-label\">Email address</label>\r\n                            <input type=\"email\" class=\"form-control\" id=\"Input_Email\" name=\"Input.Email\" required />\r\n                        </div>\r\n                        <button type=\"submit\" class=\"btn btn-warning\">Send Password Reset Link</button>\r\n                    </form>\r\n                    <div class=\"mt-3\">\r\n                        <a href=\"/Identity/Account/Login\">Back to Login</a>\r\n                    </div>\r\n                </div>",
+                            LastUpdated = new DateTime(2025, 6, 2, 18, 56, 23, 525, DateTimeKind.Utc).AddTicks(6042),
+                            PageKey = "forgot-password",
+                            TemplateKey = "Display",
+                            Title = "Forgot Password",
+                            Visibility = "Public"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            HtmlContent = "\r\n                <div class=\"container mt-5\">\r\n                    <h2 class=\"mb-4\">Reset your password</h2>\r\n                    <form action=\"/Identity/Account/ResetPassword\" method=\"post\">\r\n                        <div class=\"mb-3\">\r\n                            <label for=\"Input_Email\" class=\"form-label\">Email address</label>\r\n                            <input type=\"email\" class=\"form-control\" id=\"Input_Email\" name=\"Input.Email\" required />\r\n                        </div>\r\n                        <div class=\"mb-3\">\r\n                            <label for=\"Input_Password\" class=\"form-label\">New Password</label>\r\n                            <input type=\"password\" class=\"form-control\" id=\"Input_Password\" name=\"Input.Password\" required />\r\n                        </div>\r\n                        <div class=\"mb-3\">\r\n                            <label for=\"Input_ConfirmPassword\" class=\"form-label\">Confirm New Password</label>\r\n                            <input type=\"password\" class=\"form-control\" id=\"Input_ConfirmPassword\" name=\"Input.ConfirmPassword\" required />\r\n                        </div>\r\n                        <button type=\"submit\" class=\"btn btn-success\">Reset Password</button>\r\n                    </form>\r\n                </div>",
+                            LastUpdated = new DateTime(2025, 6, 2, 18, 56, 23, 525, DateTimeKind.Utc).AddTicks(6043),
+                            PageKey = "reset-password",
+                            TemplateKey = "Display",
+                            Title = "Reset Password",
+                            Visibility = "Public"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            HtmlContent = "\r\n                    <div class=\"container mt-5\">\r\n                    <h2 class=\"mb-4\">Change your password</h2>\r\n                    <form action=\"/Identity/Account/Manage/ChangePassword\" method=\"post\">\r\n                        <div class=\"mb-3\">\r\n                            <label for=\"Input_OldPassword\" class=\"form-label\">Current Password</label>\r\n                            <input type=\"password\" class=\"form-control\" id=\"Input_OldPassword\" name=\"Input.OldPassword\" required />\r\n                        </div>\r\n                        <div class=\"mb-3\">\r\n                            <label for=\"Input_NewPassword\" class=\"form-label\">New Password</label>\r\n                            <input type=\"password\" class=\"form-control\" id=\"Input_NewPassword\" name=\"Input.NewPassword\" required />\r\n                        </div>\r\n                        <div class=\"mb-3\">\r\n                            <label for=\"Input_ConfirmPassword\" class=\"form-label\">Confirm New Password</label>\r\n                            <input type=\"password\" class=\"form-control\" id=\"Input_ConfirmPassword\" name=\"Input.ConfirmPassword\" required />\r\n                        </div>\r\n                        <button type=\"submit\" class=\"btn btn-success\">Change Password</button>\r\n                    </form>\r\n                </div>",
+                            LastUpdated = new DateTime(2025, 6, 2, 18, 56, 23, 525, DateTimeKind.Utc).AddTicks(6044),
+                            PageKey = "change-password",
+                            TemplateKey = "Display",
+                            Title = "Change Password",
                             Visibility = "Public"
                         });
                 });
@@ -406,7 +465,7 @@ namespace SCMS.Data.Migrations
 
                     b.HasIndex("SiteSettingsId");
 
-                    b.ToTable("SocialMedia");
+                    b.ToTable("SocialMedias");
 
                     b.HasData(
                         new
@@ -414,7 +473,7 @@ namespace SCMS.Data.Migrations
                             Id = 1,
                             IconClass = "fab fa-facebook-f",
                             Name = "Facebook",
-                            SiteSettingsId = 0,
+                            SiteSettingsId = 1,
                             Url = "#"
                         },
                         new
@@ -422,7 +481,7 @@ namespace SCMS.Data.Migrations
                             Id = 2,
                             IconClass = "fab fa-twitter",
                             Name = "Twitter",
-                            SiteSettingsId = 0,
+                            SiteSettingsId = 1,
                             Url = "#"
                         },
                         new
@@ -430,7 +489,7 @@ namespace SCMS.Data.Migrations
                             Id = 3,
                             IconClass = "fab fa-instagram",
                             Name = "Instagram",
-                            SiteSettingsId = 0,
+                            SiteSettingsId = 1,
                             Url = "#"
                         },
                         new
@@ -438,7 +497,7 @@ namespace SCMS.Data.Migrations
                             Id = 4,
                             IconClass = "fab fa-youtube",
                             Name = "YouTube",
-                            SiteSettingsId = 0,
+                            SiteSettingsId = 1,
                             Url = "#"
                         },
                         new
@@ -446,7 +505,7 @@ namespace SCMS.Data.Migrations
                             Id = 5,
                             IconClass = "fab fa-linkedin-in",
                             Name = "LinkedIn",
-                            SiteSettingsId = 0,
+                            SiteSettingsId = 1,
                             Url = "#"
                         },
                         new
@@ -454,7 +513,7 @@ namespace SCMS.Data.Migrations
                             Id = 6,
                             IconClass = "fab fa-tiktok",
                             Name = "TikTok",
-                            SiteSettingsId = 0,
+                            SiteSettingsId = 1,
                             Url = "#"
                         },
                         new
@@ -462,7 +521,7 @@ namespace SCMS.Data.Migrations
                             Id = 7,
                             IconClass = "fab fa-pinterest-p",
                             Name = "Pinterest",
-                            SiteSettingsId = 0,
+                            SiteSettingsId = 1,
                             Url = "#"
                         },
                         new
@@ -470,7 +529,7 @@ namespace SCMS.Data.Migrations
                             Id = 8,
                             IconClass = "fas fa-globe",
                             Name = "Bluesky",
-                            SiteSettingsId = 0,
+                            SiteSettingsId = 1,
                             Url = "#"
                         });
                 });
@@ -514,7 +573,7 @@ namespace SCMS.Data.Migrations
                             Favicon = "favicon.ico",
                             Name = "default",
                             PreviewImage = "/Themes/Default/preview.png",
-                            SetOn = new DateTime(2025, 4, 25, 19, 34, 14, 163, DateTimeKind.Utc).AddTicks(6584)
+                            SetOn = new DateTime(2025, 6, 2, 18, 56, 23, 525, DateTimeKind.Utc).AddTicks(5964)
                         });
                 });
 
@@ -529,7 +588,7 @@ namespace SCMS.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("SCMS.Data.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -538,7 +597,7 @@ namespace SCMS.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("SCMS.Data.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -553,7 +612,7 @@ namespace SCMS.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("SCMS.Data.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -562,7 +621,7 @@ namespace SCMS.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("SCMS.Data.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

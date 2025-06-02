@@ -8,5 +8,5 @@ services:
       - AdminPassword=${AdminPassword}
       - EnableAdminSeeding=${EnableAdminSeeding}
     volumes:
-      - ./SiteDate/Database:/app/data
+      - ./SiteDate/Database:/database
       - ./SiteDate/wwwroot/images:/wwwroot/images

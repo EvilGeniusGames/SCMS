@@ -72,3 +72,7 @@ ehthumbs.db
 /SiteData/
 .env
 docker-compose.override.yml
+
+
+#Ignore LuanchSettings.json
+SCMS/Properties/launchSettings.json

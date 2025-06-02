@@ -1,41 +1,70 @@
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SCMS.Data;
 using SCMS.Interfaces;
 using SCMS.Services;
 using SCMS.Classes;
+using SCMS.Areas.Identity.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// 🔧 Explicit config override setup for environment support
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
 
 // Configure database context with SQLite
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
+Console.WriteLine($"[DEBUG] Connection String: {connectionString}");
 
 // Add ASP.NET Identity with default settings
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
-    options.SignIn.RequireConfirmedAccount = false; // You can change this as needed
+    options.SignIn.RequireConfirmedAccount = false;
 })
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-// Add Razor Pages (this is the key fix for the error you're seeing)
-builder.Services.AddRazorPages();  // Add Razor Pages services
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/portal-access";
+    options.LogoutPath = "/portal-logout";
+    options.AccessDeniedPath = "/access-denied"; // optional, if you have one
+});
 
-// Add other services
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+// Custom signin manager
+builder.Services.AddScoped<SignInManager<ApplicationUser>, CustomSignInManager>();
+
+// Add Razor Pages and MVC
+builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddScoped<IPageService, PageService>();
+
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
-// Seed admin user from environment variables if enabled
+ThemeEngine.HttpContextAccessor = app.Services.GetRequiredService<IHttpContextAccessor>();
+
+// Ensure database folder exists BEFORE context resolution
+if (!Directory.Exists("database"))
+{
+    Directory.CreateDirectory("database");
+}
+
+// Seed admin user and apply migrations
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    await IdentitySeeder.SeedAdminUserAsync(services); // Ensure this is called once, as needed
+    var db = services.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate();
+    await IdentitySeeder.SeedAdminUserAsync(services);
 }
 
 // Configure middleware
@@ -51,17 +80,19 @@ else
 app.UseStaticFiles();
 app.UseRouting();
 
-// Ensure authentication middleware is added here
-app.UseAuthentication(); // This is necessary for handling authentication-related logic
-app.UseAuthorization();  // Keep this as it is for handling authorization
+app.UseAuthentication();
+app.UseAuthorization();
 
-// Custom CMS Route
+app.MapRazorPages();
+
+// Custom CMS route
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{slug?}",
     defaults: new { controller = "Page", action = "RenderPage" });
 
-app.MapRazorPages();  // Map Razor Pages
+
 
 // Ensure theme assets are in place
 ThemeAssetManager.EnsureThemeAssets();

@@ -1,8 +1,9 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SCMS.Interfaces;
 using SCMS.Services;
 using SCMS.Data;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
 namespace SCMS.Controllers
 {
@@ -20,12 +21,48 @@ namespace SCMS.Controllers
         [Route("{slug?}")]
         public async Task<IActionResult> RenderPage(string? slug = "home")
         {
+            Console.WriteLine($"[DEBUG] Requested slug: {slug}");
             var page = await _pageService.GetPageBySlugAsync(slug ?? "home");
             if (page == null) return NotFound();
 
             var html = await ThemeEngine.RenderAsync(page, _db);
             return Content(html, "text/html");
         }
+
+        [HttpPost]
+        [Route("change-password")]
+        public async Task<IActionResult> ChangePasswordPost(string Input_OldPassword, string Input_NewPassword, string Input_ConfirmPassword)
+        {
+            if (Input_NewPassword != Input_ConfirmPassword)
+            {
+                TempData["Error"] = "Passwords do not match.";
+                return Redirect("/change-password");
+            }
+
+            var userManager = HttpContext.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
+            var signInManager = HttpContext.RequestServices.GetRequiredService<SignInManager<ApplicationUser>>();
+            var user = await userManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                return Redirect("/login");
+            }
+
+            var result = await userManager.ChangePasswordAsync(user, Input_OldPassword, Input_NewPassword);
+            if (result.Succeeded)
+            {
+                user.MustChangePassword = false;
+                await userManager.UpdateAsync(user);
+                await signInManager.SignOutAsync();
+                return Redirect("/login");
+            }
+
+            TempData["Error"] = "Password change failed: " + string.Join(" ", result.Errors.Select(e => e.Description));
+            return Redirect("/change-password");
+        }
+
+
+
         [HttpPost]
         [Route("seed-sample-content")]
         public IActionResult SeedSampleContent([FromServices] ApplicationDbContext db)
@@ -33,6 +70,23 @@ namespace SCMS.Controllers
             SeedSamplePagesAndMenus(db);
             return Redirect("/");
         }
+
+        [HttpGet]
+        [Route("portal-logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var signInManager = HttpContext.RequestServices.GetRequiredService<SignInManager<ApplicationUser>>();
+            await signInManager.SignOutAsync();
+
+            // 🔁 Instead of redirecting, fall through to page renderer
+            var page = await _pageService.GetPageBySlugAsync("portal-logout");
+            if (page == null) return NotFound();
+
+            var html = await ThemeEngine.RenderAsync(page, _db);
+            return Content(html, "text/html");
+        }
+
+
 
         private void SeedSamplePagesAndMenus(ApplicationDbContext db)
         {

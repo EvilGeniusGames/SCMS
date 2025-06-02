@@ -15,7 +15,10 @@
       "launchBrowser": true,
       "applicationUrl": "http://localhost:5220",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "AdminEmail": "richardcbarnes@gmail.com",
+        "AdminPassword": "J@defalcon016",
+        "AdminUsername": "richard_barnes"
       }
     },
     "IIS Express": {
