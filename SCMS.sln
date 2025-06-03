@@ -18,6 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 	ProjectSection(SolutionItems) = preProject
 		Documentation\SCMSPlanning.md = Documentation\SCMSPlanning.md
 		Documentation\SCMS_Logo.png = Documentation\SCMS_Logo.png
+		SCMS_Menu_Theming.md = SCMS_Menu_Theming.md
 		Documentation\scms_theming_guide.md = Documentation\scms_theming_guide.md
 	EndProjectSection
 EndProject

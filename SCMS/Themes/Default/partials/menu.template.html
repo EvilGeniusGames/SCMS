@@ -1,0 +1,18 @@
+﻿<ul class="navbar-nav">
+    {{#each Items}}
+    {{#if Children}}
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">{{Text}}</a>
+        <ul class="dropdown-menu">
+            {{#each Children}}
+            <li><a class="dropdown-item" href="{{Url}}">{{Text}}</a></li>
+            {{/each}}
+        </ul>
+    </li>
+    {{else}}
+    <li class="nav-item">
+        <a class="nav-link" href="{{Url}}">{{Text}}</a>
+    </li>
+    {{/if}}
+    {{/each}}
+</ul>
