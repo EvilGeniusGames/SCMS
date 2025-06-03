@@ -10,9 +10,9 @@ namespace SCMS.Services.Template
     {
         private const int MaxRecursionDepth = 25;
 
-        public string Parse(string template, object model)
+        public string Parse(string template, Dictionary<string, object> context)
         {
-            return Parse(template, model, 0);
+            return Parse(template, context, 0);
         }
 
         private string Parse(string template, object model, int depth)
@@ -23,7 +23,7 @@ namespace SCMS.Services.Template
             var output = new StringBuilder();
             for (int i = 0; i < template.Length;)
             {
-                if (MatchAt(template, i, "{{#each ", out int eachStart))
+                if (MatchAt(template, i, "{{#each ", out _))
                 {
                     int start = i + 8;
                     int end = template.IndexOf("}}", start);
@@ -33,8 +33,8 @@ namespace SCMS.Services.Template
                     int blockEnd = FindBlockEnd(template, blockStart, "each");
                     var blockContent = template.Substring(blockStart, blockEnd - blockStart);
 
-                    var prop = model.GetType().GetProperty(collectionName);
-                    var items = prop?.GetValue(model) as IEnumerable;
+                    var prop = ResolveProperty(model, collectionName);
+                    var items = prop as IEnumerable;
 
                     if (items != null)
                     {
@@ -44,9 +44,10 @@ namespace SCMS.Services.Template
                         }
                     }
 
-                    i = blockEnd + 9; // skip {{/each}}
+                    i = blockEnd + "{{/each}}".Length;
+
                 }
-                else if (MatchAt(template, i, "{{#if ", out int ifStart))
+                else if (MatchAt(template, i, "{{#if ", out _))
                 {
                     int start = i + 6;
                     int end = template.IndexOf("}}", start);
@@ -67,8 +68,7 @@ namespace SCMS.Services.Template
                         trueBlock = template.Substring(blockStart, blockEnd - blockStart);
                     }
 
-                    var prop = model.GetType().GetProperty(propName);
-                    var value = prop?.GetValue(model);
+                    var value = ResolveProperty(model, propName);
 
                     bool condition = value switch
                     {
@@ -81,17 +81,18 @@ namespace SCMS.Services.Template
                     };
 
                     output.Append(Parse(condition ? trueBlock : falseBlock, model, depth + 1));
-                    i = blockEnd + 6; // skip {{/if}}
+
+                    i = blockEnd + "{{/if}}".Length;
+
                 }
-                else if (MatchAt(template, i, "{{", out int varStart))
+                else if (MatchAt(template, i, "{{", out _))
                 {
-                    int end = template.IndexOf("}}", varStart + 2);
-                    var key = template.Substring(varStart + 2, end - varStart - 2).Trim();
+                    int end = template.IndexOf("}}", i + 2);
+                    var key = template.Substring(i + 2, end - i - 2).Trim();
 
-                    var prop = model.GetType().GetProperty(key);
-                    var value = prop?.GetValue(model)?.ToString() ?? "";
+                    var value = ResolveProperty(model, key);
+                    output.Append(value?.ToString() ?? "");
 
-                    output.Append(value);
                     i = end + 2;
                 }
                 else
@@ -141,6 +142,15 @@ namespace SCMS.Services.Template
                 i++;
             }
             return -1;
+        }
+
+        private static object ResolveProperty(object model, string key)
+        {
+            if (model is Dictionary<string, object> dict)
+                return dict.TryGetValue(key, out var val) ? val : null;
+
+            var prop = model.GetType().GetProperty(key);
+            return prop?.GetValue(model);
         }
     }
 }

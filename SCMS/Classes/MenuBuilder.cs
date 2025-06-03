@@ -28,6 +28,12 @@ namespace SCMS.Classes
                 Items = topLevelItems.Select(t => ConvertToModel(t, allItems, db)).ToList()
             };
 
+            var context = new Dictionary<string, object>
+            {
+                { "Items", model.Items },
+                { "Orientation", orientation }
+            };
+
             // Locate theme and template
             var theme = ThemeManager.GetCurrentTheme(); // Replace with actual theme getter if needed
             var templatePath = Path.Combine("Themes", theme, "partials", "menu.template.html");
@@ -36,7 +42,7 @@ namespace SCMS.Classes
             {
                 var template = System.IO.File.ReadAllText(templatePath);
                 var parser = new TemplateParser();
-                return parser.Parse(template, model);
+                return parser.Parse(template, context);
             }
             else
             {
