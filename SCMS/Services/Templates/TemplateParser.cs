@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace SCMS.Services.Template
 {
@@ -12,6 +13,8 @@ namespace SCMS.Services.Template
 
         public string Parse(string template, Dictionary<string, object> context)
         {
+            // Strip all HTML comments globally before parsing
+            template = Regex.Replace(template, @"<!--.*?-->", "", RegexOptions.Singleline);
             return Parse(template, context, 0);
         }
 
@@ -23,6 +26,16 @@ namespace SCMS.Services.Template
             var output = new StringBuilder();
             for (int i = 0; i < template.Length;)
             {
+                // Skip over HTML comments entirely
+                if (template.Substring(i).StartsWith("<!--"))
+                {
+                    int commentEnd = template.IndexOf("-->", i + 4);
+                    if (commentEnd == -1) break; // Malformed comment, exit early
+                    output.Append(template.Substring(i, commentEnd + 3 - i));
+                    i = commentEnd + 3;
+                    continue;
+                }
+
                 if (MatchAt(template, i, "{{#each ", out _))
                 {
                     int start = i + 8;
@@ -45,7 +58,6 @@ namespace SCMS.Services.Template
                     }
 
                     i = blockEnd + "{{/each}}".Length;
-
                 }
                 else if (MatchAt(template, i, "{{#if ", out _))
                 {
@@ -83,13 +95,11 @@ namespace SCMS.Services.Template
                     output.Append(Parse(condition ? trueBlock : falseBlock, model, depth + 1));
 
                     i = blockEnd + "{{/if}}".Length;
-
                 }
                 else if (MatchAt(template, i, "{{", out _))
                 {
                     int end = template.IndexOf("}}", i + 2);
                     var key = template.Substring(i + 2, end - i - 2).Trim();
-
                     var value = ResolveProperty(model, key);
                     output.Append(value?.ToString() ?? "");
 
@@ -129,7 +139,8 @@ namespace SCMS.Services.Template
                 i++;
             }
 
-            throw new Exception($"Unmatched {{#{type}}} block");
+            var snippet = template.Substring(start, Math.Min(200, template.Length - start));
+            throw new Exception($"Unmatched {{#{type}}} block near: {snippet}");
         }
 
         private static int FindElse(string template, int start, int end)

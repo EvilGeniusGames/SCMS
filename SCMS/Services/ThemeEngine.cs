@@ -19,7 +19,11 @@ namespace SCMS.Services
 
         public static async Task<string> RenderAsync(PageContent page, ApplicationDbContext db)
         {
-            var siteSettings = await db.SiteSettings.FirstOrDefaultAsync();
+            var siteSettings = await db.SiteSettings
+            .Include(s => s.SocialLinks)
+            .ThenInclude(l => l.Platform)
+            .FirstOrDefaultAsync();
+
             var themeName = siteSettings?.Theme?.Name ?? "default";
             var themePath = Path.Combine("Themes", themeName);
 
@@ -111,13 +115,55 @@ namespace SCMS.Services
                 result = result.Replace("{{ANTIFORGERY_TOKEN}}", tokenValue);
             }
 
-            // Catch unknown tokens Leave at bottom
+            // Handle <cms:SocialLinks />
+            var socialLinksRegex = new Regex(@"<cms:SocialLinks\s*\/>", RegexOptions.IgnoreCase);
+
+            if (socialLinksRegex.IsMatch(result))
+            {
+                var templatePath = Path.Combine(themePath, "partials", "social.template.html");
+                string renderedSocial = "";
+
+                if (File.Exists(templatePath))
+                {
+                    var templateText = await File.ReadAllTextAsync(templatePath);
+
+                    var links = siteSettings?.SocialLinks?.Where(l => l.Platform != null).Select(link =>
+                        new Dictionary<string, object>
+                        {
+                            ["Url"] = link.Url,
+                            ["Name"] = link.Platform.Name,
+                            ["IconClass"] = link.Platform.IconClass,
+                            ["IconColor"] = link.IconColor ?? "#000000"
+                        }
+                    ).ToList<object>() ?? new List<object>();
+
+                    var socialData = new Dictionary<string, object>
+                    {
+                        ["Items"] = links
+                    };
+
+                    var parser = new SCMS.Services.Template.TemplateParser();
+                    renderedSocial = parser.Parse(templateText, socialData);
+                }
+
+                result = socialLinksRegex.Replace(result, renderedSocial);
+            }
+
+            // Catch unknown tokens and replace with UNKNOWN Leave at bottom
             result = Regex.Replace(result, @"<cms:[^>]+\/>", match =>
             {
                 var safeToken = match.Value.Replace("<", "(").Replace(">", ")");
                 return $"<span style='color: red; font-weight: bold;'>[UNKNOWN TOKEN: {safeToken}]</span>";
             });
 
+            //embed font awesome becuase its a requirment for the operation of the site,
+            const string fontAwesomeCdn = "<link href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css\" rel=\"stylesheet\">";
+            if (!result.Contains("cdnjs.cloudflare.com/ajax/libs/font-awesome"))
+            {
+                result = result.Replace("</head>", $"{fontAwesomeCdn}\n</head>");
+            }
+
+            // Return the final rendered HTML
             return result;
         }
     }

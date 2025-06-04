@@ -1,0 +1,23 @@
+﻿<!--
+Template: Social Links Renderer
+Used by: <cms:SocialLinks />
+
+Each item in {{#each Links}} exposes the following fields:
+  - {{Url}}         → Full URL to the social profile (e.g., https://facebook.com/page)
+  - {{Name}}        → Platform display name (e.g., Facebook, Twitter)
+  - {{IconClass}}   → Font Awesome class (e.g., fab fa-facebook-f)
+  - {{IconColor}}   → Hex colour string (e.g., #3b5998)
+ 
+    these tokens are case sensitive.
+
+Modify layout and styling as needed. Example: use only icons, names, or both.
+-->
+
+<div class="social-links">
+    {{#each Items}}
+    <a href="{{Url}}" target="_blank" rel="noopener noreferrer" class="me-2">
+        <i class="{{IconClass}}" style="color:{{IconColor}};"></i> {{Name}}
+    </a>
+    {{/each}}
+</div>
+

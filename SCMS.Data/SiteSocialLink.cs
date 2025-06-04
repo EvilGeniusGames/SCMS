@@ -9,7 +9,6 @@ namespace SCMS.Data
     public class SiteSocialLink
     {
         public int Id { get; set; }
-
         public string Url { get; set; } = "";
         public string? IconColor { get; set; }
         public int SiteSettingsId { get; set; }

@@ -1,0 +1,62 @@
+﻿@model SCMS.Data.SiteSettings
+@{
+    ViewData["Title"] = "Manage Social Media Links";
+    var platforms = ViewData["Platforms"] as IEnumerable<SCMS.Data.SocialMediaPlatform>;
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">Manage Social Media Links</h2>
+
+    <form asp-action="AddLink" method="post" class="row g-2 align-items-end mb-4">
+        <div class="col-md-3">
+            <label class="form-label">Platform</label>
+            <select name="PlatformId" class="form-select" required>
+                <option value="">Select...</option>
+                @foreach (var p in platforms)
+                {
+                    <option value="@p.Id">@p.Name</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-5">
+            <label class="form-label">URL</label>
+            <input type="url" name="Url" class="form-control" required />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Icon Color</label>
+            <input type="color" name="IconColor" class="form-control form-control-color" />
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Add Link</button>
+        </div>
+    </form>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Platform</th>
+                <th>URL</th>
+                <th>Icon</th>
+                <th>Icon Color</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var link in Model.SocialLinks)
+            {
+                <tr>
+                    <td>@link.Platform.Name</td>
+                    <td>@link.Url</td>
+                    <td><i class="@link.Platform.IconClass" style="color:@link.IconColor"></i></td>
+                    <td>@link.IconColor</td>
+                    <td>
+                        <form asp-action="DeleteLink" method="post" class="d-inline">
+                            <input type="hidden" name="Id" value="@link.Id" />
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
