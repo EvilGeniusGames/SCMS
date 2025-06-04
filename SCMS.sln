@@ -20,6 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 		Documentation\SCMS_Logo.png = Documentation\SCMS_Logo.png
 		SCMS_Menu_Theming.md = SCMS_Menu_Theming.md
 		Documentation\scms_theming_guide.md = Documentation\scms_theming_guide.md
+		SCSM_Razor_Page_rendering.md = SCSM_Razor_Page_rendering.md
 	EndProjectSection
 EndProject
 Global

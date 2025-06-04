@@ -196,58 +196,7 @@ namespace SCMS.Services
                     </form>
                 </div>",
                     LastUpdated = DateTime.UtcNow
-                },
-                new PageContent
-                {
-                    Id = 8,
-                    PageKey = "admin/settings",
-                    Title = "Site Settings",
-                    HtmlContent = @"
-                    <div class=""container mt-5"">
-                        <h2 class=""mb-4"">Edit Site Settings</h2>
-                        <form action=""/admin/settings/save"" method=""post"">
-                            <div class=""mb-3"">
-                                <label for=""SiteName"" class=""form-label"">Site Name</label>
-                                <input type=""text"" class=""form-control"" id=""SiteName"" name=""SiteSettings.SiteName"" required />
-                            </div>
-                            <div class=""mb-3"">
-                                <label for=""Tagline"" class=""form-label"">Tagline</label>
-                                <input type=""text"" class=""form-control"" id=""Tagline"" name=""SiteSettings.Tagline"" />
-                            </div>
-                            <div class=""mb-3"">
-                                <label for=""ThemeId"" class=""form-label"">Theme</label>
-                                <select class=""form-select"" id=""ThemeId"" name=""SiteSettings.ThemeId"">
-                                    {{#each Themes}}
-                                    <option value=""{{Id}}"" {{#if IsSelected}}selected{{/if}}>{{DisplayName}}</option>
-                                    {{/each}}
-                                </select>
-                            </div>
-                            <div class=""mb-3"">
-                                <label for=""ContactEmail"" class=""form-label"">Contact Email</label>
-                                <input type=""email"" class=""form-control"" id=""ContactEmail"" name=""SiteSettings.ContactEmail"" />
-                            </div>
-                            <div class=""mb-3"">
-                                <label for=""ContactPhone"" class=""form-label"">Contact Phone</label>
-                                <input type=""text"" class=""form-control"" id=""ContactPhone"" name=""SiteSettings.ContactPhone"" />
-                            </div>
-                            <div class=""mb-3"">
-                                <label for=""ContactAddress"" class=""form-label"">Contact Address</label>
-                                <input type=""text"" class=""form-control"" id=""ContactAddress"" name=""SiteSettings.ContactAddress"" />
-                            </div>
-                            <div class=""mb-3"">
-                                <label for=""Copyright"" class=""form-label"">Copyright</label>
-                                <input type=""text"" class=""form-control"" id=""Copyright"" name=""SiteSettings.Copyright"" />
-                            </div>
-                            <div class=""mb-3"">
-                                <label for=""SocialLinks"" class=""form-label"">Social Links</label>
-                                <input type=""text"" class=""form-control"" id=""SocialLinks"" name=""SiteSettings.SocialLinks"" value=""TODO: Build link editor"" />
-                            </div>
-                            <button type=""submit"" class=""btn btn-primary"">Save Changes</button>
-                        </form>
-                    </div>",
-                    LastUpdated = DateTime.UtcNow
                 }
-
             );
         }
 
@@ -273,17 +222,16 @@ namespace SCMS.Services
                 ThemeId = 1
             });
 
-            modelBuilder.Entity<SocialMedia>().HasData(
-                new SocialMedia { Id = 1, Name = "Facebook", Url = "#", IconClass = "fab fa-facebook-f", SiteSettingsId = 1 },
-                new SocialMedia { Id = 2, Name = "Twitter", Url = "#", IconClass = "fab fa-twitter", SiteSettingsId = 1 },
-                new SocialMedia { Id = 3, Name = "Instagram", Url = "#", IconClass = "fab fa-instagram", SiteSettingsId = 1 },
-                new SocialMedia { Id = 4, Name = "YouTube", Url = "#", IconClass = "fab fa-youtube", SiteSettingsId = 1 },
-                new SocialMedia { Id = 5, Name = "LinkedIn", Url = "#", IconClass = "fab fa-linkedin-in", SiteSettingsId = 1 },
-                new SocialMedia { Id = 6, Name = "TikTok", Url = "#", IconClass = "fab fa-tiktok", SiteSettingsId = 1 },
-                new SocialMedia { Id = 7, Name = "Pinterest", Url = "#", IconClass = "fab fa-pinterest-p", SiteSettingsId = 1 },
-                new SocialMedia { Id = 8, Name = "Bluesky", Url = "#", IconClass = "fas fa-globe", SiteSettingsId = 1 }
+            modelBuilder.Entity<SocialMediaPlatform>().HasData(
+                new SocialMediaPlatform { Id = 1, Name = "Facebook", IconClass = "fab fa-facebook-f" },
+                new SocialMediaPlatform { Id = 2, Name = "Twitter", IconClass = "fab fa-twitter" },
+                new SocialMediaPlatform { Id = 3, Name = "Instagram", IconClass = "fab fa-instagram" },
+                new SocialMediaPlatform { Id = 4, Name = "YouTube", IconClass = "fab fa-youtube" },
+                new SocialMediaPlatform { Id = 5, Name = "LinkedIn", IconClass = "fab fa-linkedin-in" },
+                new SocialMediaPlatform { Id = 6, Name = "TikTok", IconClass = "fab fa-tiktok" },
+                new SocialMediaPlatform { Id = 7, Name = "Pinterest", IconClass = "fab fa-pinterest-p" },
+                new SocialMediaPlatform { Id = 8, Name = "Bluesky", IconClass = "fas fa-globe" }
             );
-
 
             // Default Home Page Content
             modelBuilder.Entity<PageContent>().HasData(new PageContent
@@ -329,7 +277,7 @@ namespace SCMS.Services
                     ParentId = 1,
                     Title = "Site Settings",
                     Url = "/admin/settings",
-                    PageContentId = 8,
+                    PageContentId = null,
                     MenuGroup = "Main",
                     Order = 0,
                     IsVisible = true,

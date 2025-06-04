@@ -27,7 +27,8 @@ namespace SCMS.Data
         public DbSet<SiteSettings> SiteSettings { get; set; }
         public DbSet<PageContent> PageContents { get; set; }
         public DbSet<MenuItem> MenuItems { get; set; }
-        public DbSet<SocialMedia> SocialMedias { get; set; }
+        public DbSet<SocialMediaPlatform> SocialMediaPlatforms { get; set; }
+        public DbSet<SiteSocialLink> SiteSocialLinks { get; set; }
         public DbSet<SecurityLevel> SecurityLevels { get; set; }
         public DbSet<SecurityLevelRole> SecurityLevelRoles { get; set; }
     }

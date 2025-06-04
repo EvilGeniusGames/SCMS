@@ -50,7 +50,9 @@ builder.Services.AddScoped<IPageService, PageService>();
 builder.Services.AddHttpContextAccessor();
 // Add the user context service
 builder.Services.AddScoped<CurrentUserContext>();
-
+// register the RazorRender for admin pages to use client themes.
+builder.Services.AddScoped<RazorRenderer>();
+// build the app    
 var app = builder.Build();
 
 ThemeEngine.HttpContextAccessor = app.Services.GetRequiredService<IHttpContextAccessor>();

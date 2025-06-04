@@ -14,11 +14,12 @@ namespace SCMS.Data
         public string? Copyright { get; set; }
 
         // Social links (1-to-many)
-        public ICollection<SocialMedia> SocialLinks { get; set; } = new List<SocialMedia>();
+        public ICollection<SiteSocialLink> SocialLinks { get; set; } = new List<SiteSocialLink>();
 
         [Required]
         public int ThemeId { get; set; }
-        public ThemeSetting Theme { get; set; }
+        public ThemeSetting? Theme { get; set; }
+
     }
 
 }

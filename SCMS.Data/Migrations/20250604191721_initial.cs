@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SCMS.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class Inititial : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -87,6 +87,20 @@ namespace SCMS.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SecurityLevels", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SocialMediaPlatforms",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    IconClass = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SocialMediaPlatforms", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -291,23 +305,29 @@ namespace SCMS.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SocialMedias",
+                name: "SiteSocialLinks",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", nullable: false),
                     Url = table.Column<string>(type: "TEXT", nullable: false),
-                    IconClass = table.Column<string>(type: "TEXT", nullable: true),
-                    SiteSettingsId = table.Column<int>(type: "INTEGER", nullable: false)
+                    IconColor = table.Column<string>(type: "TEXT", nullable: true),
+                    SiteSettingsId = table.Column<int>(type: "INTEGER", nullable: false),
+                    SocialMediaPlatformId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SocialMedias", x => x.Id);
+                    table.PrimaryKey("PK_SiteSocialLinks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SocialMedias_SiteSettings_SiteSettingsId",
+                        name: "FK_SiteSocialLinks_SiteSettings_SiteSettingsId",
                         column: x => x.SiteSettingsId,
                         principalTable: "SiteSettings",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SiteSocialLinks_SocialMediaPlatforms_SocialMediaPlatformId",
+                        column: x => x.SocialMediaPlatformId,
+                        principalTable: "SocialMediaPlatforms",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -317,9 +337,9 @@ namespace SCMS.Data.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "3de76a6c-2a3f-4a14-9805-70e3074f5d62", null, "User", "USER" },
-                    { "d7e76331-13c2-41ca-b5dc-96c4f1811867", null, "Editor", "EDITOR" },
-                    { "e1abed2f-8755-4eb5-9fd0-92351251d23d", null, "Admin", "ADMIN" }
+                    { "14643586-f63c-475d-a5b4-73fee7168cb7", null, "Editor", "EDITOR" },
+                    { "55ef5028-bb23-4f2a-a65b-4afbf46af943", null, "Admin", "ADMIN" },
+                    { "5e3bfa4c-7919-43aa-a676-2ed1774ae732", null, "User", "USER" }
                 });
 
             migrationBuilder.InsertData(
@@ -327,14 +347,13 @@ namespace SCMS.Data.Migrations
                 columns: new[] { "Id", "HtmlContent", "LastUpdated", "MetaDescription", "MetaKeywords", "PageKey", "TemplateKey", "Title", "UpdatedBy", "Visibility" },
                 values: new object[,]
                 {
-                    { 1, "\r\n                    <h1 class=\"display-4 mb-4\">Welcome</h1>\r\n                    <p class=\"lead mb-4\">This is your first SCMS page. Edit it in the admin panel.</p>", new DateTime(2025, 6, 4, 1, 11, 13, 82, DateTimeKind.Utc).AddTicks(4776), null, null, "home", "Display", "Welcome", null, "Public" },
-                    { 2, "\r\n                    <div class=\"d-flex align-items-center justify-content-center\">\r\n                        <div class=\"card shadow p-4\" style=\"max-width: 400px; width: 100%;\">\r\n                            <h2 class=\"text-center mb-4\">Login</h2>\r\n                            <form action=\"/Identity/Account/Login\" method=\"post\">\r\n                                <input name=\"__RequestVerificationToken\" type=\"hidden\" value=\"{{ANTIFORGERY_TOKEN}}\" />\r\n                                <div class=\"mb-3\">\r\n                                    <label for=\"email\" class=\"form-label\">Email address</label>\r\n                                    <input type=\"email\" class=\"form-control\" id=\"email\" name=\"Input.Email\" required />\r\n                                </div>\r\n                                <div class=\"mb-3\">\r\n                                    <label for=\"password\" class=\"form-label\">Password</label>\r\n                                    <input type=\"password\" class=\"form-control\" id=\"password\" name=\"Input.Password\" required />\r\n                                </div>\r\n                                <div class=\"mb-3 form-check\">\r\n                                    <input type=\"checkbox\" class=\"form-check-input\" id=\"rememberMe\" name=\"Input.RememberMe\" />\r\n                                    <label class=\"form-check-label\" for=\"rememberMe\">Remember Me</label>\r\n                                </div>\r\n                                <button type=\"submit\" class=\"btn btn-primary w-100\">Login</button>\r\n                            </form>\r\n                            <div class=\"mt-3 text-center\">\r\n                                <a href=\"/forgot-password\">Forgot Password?</a><br />\r\n                            </div>\r\n                        </div>\r\n                    </div>", new DateTime(2025, 6, 4, 1, 11, 13, 82, DateTimeKind.Utc).AddTicks(4825), null, null, "portal-access", "Display", "Login", null, "Public" },
-                    { 3, "\r\n                <div class=\"container mt-5 text-center\">\r\n                    <h2>You have been logged out</h2>\r\n                    <p>Thank you for visiting. See you again soon!</p>\r\n                    <a href=\"/\" class=\"btn btn-primary mt-3\">Return Home</a>\r\n                </div>", new DateTime(2025, 6, 4, 1, 11, 13, 82, DateTimeKind.Utc).AddTicks(4826), null, null, "portal-logout", "Display", "Logout", null, "Public" },
-                    { 4, "\r\n                    <div class=\"container mt-5\">\r\n                        <h2 class=\"mb-4\">Register</h2>\r\n                        <form action=\"/Identity/Account/Register\" method=\"post\">\r\n                            <div class=\"mb-3\">\r\n                                <label for=\"Input_Email\" class=\"form-label\">Email address</label>\r\n                                <input type=\"email\" class=\"form-control\" id=\"Input_Email\" name=\"Input.Email\" required />\r\n                            </div>\r\n                            <div class=\"mb-3\">\r\n                                <label for=\"Input_Password\" class=\"form-label\">Password</label>\r\n                                <input type=\"password\" class=\"form-control\" id=\"Input_Password\" name=\"Input.Password\" required />\r\n                            </div>\r\n                            <div class=\"mb-3\">\r\n                                <label for=\"Input_ConfirmPassword\" class=\"form-label\">Confirm Password</label>\r\n                                <input type=\"password\" class=\"form-control\" id=\"Input_ConfirmPassword\" name=\"Input.ConfirmPassword\" required />\r\n                            </div>\r\n                            <button type=\"submit\" class=\"btn btn-primary\">Register</button>\r\n                        </form>\r\n                        <div class=\"mt-3\">\r\n                            <a href=\"/Identity/Account/Login\">Already have an account? Login here</a>\r\n                        </div>\r\n                    </div>", new DateTime(2025, 6, 4, 1, 11, 13, 82, DateTimeKind.Utc).AddTicks(4827), null, null, "register", "Display", "Register", null, "Public" },
-                    { 5, "\r\n                <div class=\"container mt-5\">\r\n                    <h2 class=\"mb-4\">Forgot your password?</h2>\r\n                    <form action=\"/Identity/Account/ForgotPassword\" method=\"post\">\r\n                        <div class=\"mb-3\">\r\n                            <label for=\"Input_Email\" class=\"form-label\">Email address</label>\r\n                            <input type=\"email\" class=\"form-control\" id=\"Input_Email\" name=\"Input.Email\" required />\r\n                        </div>\r\n                        <button type=\"submit\" class=\"btn btn-warning\">Send Password Reset Link</button>\r\n                    </form>\r\n                    <div class=\"mt-3\">\r\n                        <a href=\"/Identity/Account/Login\">Back to Login</a>\r\n                    </div>\r\n                </div>", new DateTime(2025, 6, 4, 1, 11, 13, 82, DateTimeKind.Utc).AddTicks(4828), null, null, "forgot-password", "Display", "Forgot Password", null, "Public" },
-                    { 6, "\r\n                <div class=\"container mt-5\">\r\n                    <h2 class=\"mb-4\">Reset your password</h2>\r\n                    <form action=\"/Identity/Account/ResetPassword\" method=\"post\">\r\n                        <div class=\"mb-3\">\r\n                            <label for=\"Input_Email\" class=\"form-label\">Email address</label>\r\n                            <input type=\"email\" class=\"form-control\" id=\"Input_Email\" name=\"Input.Email\" required />\r\n                        </div>\r\n                        <div class=\"mb-3\">\r\n                            <label for=\"Input_Password\" class=\"form-label\">New Password</label>\r\n                            <input type=\"password\" class=\"form-control\" id=\"Input_Password\" name=\"Input.Password\" required />\r\n                        </div>\r\n                        <div class=\"mb-3\">\r\n                            <label for=\"Input_ConfirmPassword\" class=\"form-label\">Confirm New Password</label>\r\n                            <input type=\"password\" class=\"form-control\" id=\"Input_ConfirmPassword\" name=\"Input.ConfirmPassword\" required />\r\n                        </div>\r\n                        <button type=\"submit\" class=\"btn btn-success\">Reset Password</button>\r\n                    </form>\r\n                </div>", new DateTime(2025, 6, 4, 1, 11, 13, 82, DateTimeKind.Utc).AddTicks(4829), null, null, "reset-password", "Display", "Reset Password", null, "Public" },
-                    { 7, "\r\n                    <div class=\"container mt-5\">\r\n                    <h2 class=\"mb-4\">Change your password</h2>\r\n                    <form action=\"/Identity/Account/Manage/ChangePassword\" method=\"post\">\r\n                        <div class=\"mb-3\">\r\n                            <label for=\"Input_OldPassword\" class=\"form-label\">Current Password</label>\r\n                            <input type=\"password\" class=\"form-control\" id=\"Input_OldPassword\" name=\"Input.OldPassword\" required />\r\n                        </div>\r\n                        <div class=\"mb-3\">\r\n                            <label for=\"Input_NewPassword\" class=\"form-label\">New Password</label>\r\n                            <input type=\"password\" class=\"form-control\" id=\"Input_NewPassword\" name=\"Input.NewPassword\" required />\r\n                        </div>\r\n                        <div class=\"mb-3\">\r\n                            <label for=\"Input_ConfirmPassword\" class=\"form-label\">Confirm New Password</label>\r\n                            <input type=\"password\" class=\"form-control\" id=\"Input_ConfirmPassword\" name=\"Input.ConfirmPassword\" required />\r\n                        </div>\r\n                        <button type=\"submit\" class=\"btn btn-success\">Change Password</button>\r\n                    </form>\r\n                </div>", new DateTime(2025, 6, 4, 1, 11, 13, 82, DateTimeKind.Utc).AddTicks(4829), null, null, "change-password", "Display", "Change Password", null, "Public" },
-                    { 8, "\r\n                    <div class=\"container mt-5\">\r\n                        <h2 class=\"mb-4\">Edit Site Settings</h2>\r\n                        <form action=\"/admin/settings/save\" method=\"post\">\r\n                            <div class=\"mb-3\">\r\n                                <label for=\"SiteName\" class=\"form-label\">Site Name</label>\r\n                                <input type=\"text\" class=\"form-control\" id=\"SiteName\" name=\"SiteSettings.SiteName\" required />\r\n                            </div>\r\n                            <div class=\"mb-3\">\r\n                                <label for=\"Tagline\" class=\"form-label\">Tagline</label>\r\n                                <input type=\"text\" class=\"form-control\" id=\"Tagline\" name=\"SiteSettings.Tagline\" />\r\n                            </div>\r\n                            <div class=\"mb-3\">\r\n                                <label for=\"ThemeId\" class=\"form-label\">Theme</label>\r\n                                <select class=\"form-select\" id=\"ThemeId\" name=\"SiteSettings.ThemeId\">\r\n                                    {{#each Themes}}\r\n                                    <option value=\"{{Id}}\" {{#if IsSelected}}selected{{/if}}>{{DisplayName}}</option>\r\n                                    {{/each}}\r\n                                </select>\r\n                            </div>\r\n                            <div class=\"mb-3\">\r\n                                <label for=\"ContactEmail\" class=\"form-label\">Contact Email</label>\r\n                                <input type=\"email\" class=\"form-control\" id=\"ContactEmail\" name=\"SiteSettings.ContactEmail\" />\r\n                            </div>\r\n                            <div class=\"mb-3\">\r\n                                <label for=\"ContactPhone\" class=\"form-label\">Contact Phone</label>\r\n                                <input type=\"text\" class=\"form-control\" id=\"ContactPhone\" name=\"SiteSettings.ContactPhone\" />\r\n                            </div>\r\n                            <div class=\"mb-3\">\r\n                                <label for=\"ContactAddress\" class=\"form-label\">Contact Address</label>\r\n                                <input type=\"text\" class=\"form-control\" id=\"ContactAddress\" name=\"SiteSettings.ContactAddress\" />\r\n                            </div>\r\n                            <div class=\"mb-3\">\r\n                                <label for=\"Copyright\" class=\"form-label\">Copyright</label>\r\n                                <input type=\"text\" class=\"form-control\" id=\"Copyright\" name=\"SiteSettings.Copyright\" />\r\n                            </div>\r\n                            <div class=\"mb-3\">\r\n                                <label for=\"SocialLinks\" class=\"form-label\">Social Links</label>\r\n                                <input type=\"text\" class=\"form-control\" id=\"SocialLinks\" name=\"SiteSettings.SocialLinks\" value=\"TODO: Build link editor\" />\r\n                            </div>\r\n                            <button type=\"submit\" class=\"btn btn-primary\">Save Changes</button>\r\n                        </form>\r\n                    </div>", new DateTime(2025, 6, 4, 1, 11, 13, 82, DateTimeKind.Utc).AddTicks(4830), null, null, "admin/settings", "Display", "Site Settings", null, "Public" }
+                    { 1, "\r\n                    <h1 class=\"display-4 mb-4\">Welcome</h1>\r\n                    <p class=\"lead mb-4\">This is your first SCMS page. Edit it in the admin panel.</p>", new DateTime(2025, 6, 4, 19, 17, 20, 772, DateTimeKind.Utc).AddTicks(7899), null, null, "home", "Display", "Welcome", null, "Public" },
+                    { 2, "\r\n                    <div class=\"d-flex align-items-center justify-content-center\">\r\n                        <div class=\"card shadow p-4\" style=\"max-width: 400px; width: 100%;\">\r\n                            <h2 class=\"text-center mb-4\">Login</h2>\r\n                            <form action=\"/Identity/Account/Login\" method=\"post\">\r\n                                <input name=\"__RequestVerificationToken\" type=\"hidden\" value=\"{{ANTIFORGERY_TOKEN}}\" />\r\n                                <div class=\"mb-3\">\r\n                                    <label for=\"email\" class=\"form-label\">Email address</label>\r\n                                    <input type=\"email\" class=\"form-control\" id=\"email\" name=\"Input.Email\" required />\r\n                                </div>\r\n                                <div class=\"mb-3\">\r\n                                    <label for=\"password\" class=\"form-label\">Password</label>\r\n                                    <input type=\"password\" class=\"form-control\" id=\"password\" name=\"Input.Password\" required />\r\n                                </div>\r\n                                <div class=\"mb-3 form-check\">\r\n                                    <input type=\"checkbox\" class=\"form-check-input\" id=\"rememberMe\" name=\"Input.RememberMe\" />\r\n                                    <label class=\"form-check-label\" for=\"rememberMe\">Remember Me</label>\r\n                                </div>\r\n                                <button type=\"submit\" class=\"btn btn-primary w-100\">Login</button>\r\n                            </form>\r\n                            <div class=\"mt-3 text-center\">\r\n                                <a href=\"/forgot-password\">Forgot Password?</a><br />\r\n                            </div>\r\n                        </div>\r\n                    </div>", new DateTime(2025, 6, 4, 19, 17, 20, 772, DateTimeKind.Utc).AddTicks(7947), null, null, "portal-access", "Display", "Login", null, "Public" },
+                    { 3, "\r\n                <div class=\"container mt-5 text-center\">\r\n                    <h2>You have been logged out</h2>\r\n                    <p>Thank you for visiting. See you again soon!</p>\r\n                    <a href=\"/\" class=\"btn btn-primary mt-3\">Return Home</a>\r\n                </div>", new DateTime(2025, 6, 4, 19, 17, 20, 772, DateTimeKind.Utc).AddTicks(7948), null, null, "portal-logout", "Display", "Logout", null, "Public" },
+                    { 4, "\r\n                    <div class=\"container mt-5\">\r\n                        <h2 class=\"mb-4\">Register</h2>\r\n                        <form action=\"/Identity/Account/Register\" method=\"post\">\r\n                            <div class=\"mb-3\">\r\n                                <label for=\"Input_Email\" class=\"form-label\">Email address</label>\r\n                                <input type=\"email\" class=\"form-control\" id=\"Input_Email\" name=\"Input.Email\" required />\r\n                            </div>\r\n                            <div class=\"mb-3\">\r\n                                <label for=\"Input_Password\" class=\"form-label\">Password</label>\r\n                                <input type=\"password\" class=\"form-control\" id=\"Input_Password\" name=\"Input.Password\" required />\r\n                            </div>\r\n                            <div class=\"mb-3\">\r\n                                <label for=\"Input_ConfirmPassword\" class=\"form-label\">Confirm Password</label>\r\n                                <input type=\"password\" class=\"form-control\" id=\"Input_ConfirmPassword\" name=\"Input.ConfirmPassword\" required />\r\n                            </div>\r\n                            <button type=\"submit\" class=\"btn btn-primary\">Register</button>\r\n                        </form>\r\n                        <div class=\"mt-3\">\r\n                            <a href=\"/Identity/Account/Login\">Already have an account? Login here</a>\r\n                        </div>\r\n                    </div>", new DateTime(2025, 6, 4, 19, 17, 20, 772, DateTimeKind.Utc).AddTicks(7949), null, null, "register", "Display", "Register", null, "Public" },
+                    { 5, "\r\n                <div class=\"container mt-5\">\r\n                    <h2 class=\"mb-4\">Forgot your password?</h2>\r\n                    <form action=\"/Identity/Account/ForgotPassword\" method=\"post\">\r\n                        <div class=\"mb-3\">\r\n                            <label for=\"Input_Email\" class=\"form-label\">Email address</label>\r\n                            <input type=\"email\" class=\"form-control\" id=\"Input_Email\" name=\"Input.Email\" required />\r\n                        </div>\r\n                        <button type=\"submit\" class=\"btn btn-warning\">Send Password Reset Link</button>\r\n                    </form>\r\n                    <div class=\"mt-3\">\r\n                        <a href=\"/Identity/Account/Login\">Back to Login</a>\r\n                    </div>\r\n                </div>", new DateTime(2025, 6, 4, 19, 17, 20, 772, DateTimeKind.Utc).AddTicks(7950), null, null, "forgot-password", "Display", "Forgot Password", null, "Public" },
+                    { 6, "\r\n                <div class=\"container mt-5\">\r\n                    <h2 class=\"mb-4\">Reset your password</h2>\r\n                    <form action=\"/Identity/Account/ResetPassword\" method=\"post\">\r\n                        <div class=\"mb-3\">\r\n                            <label for=\"Input_Email\" class=\"form-label\">Email address</label>\r\n                            <input type=\"email\" class=\"form-control\" id=\"Input_Email\" name=\"Input.Email\" required />\r\n                        </div>\r\n                        <div class=\"mb-3\">\r\n                            <label for=\"Input_Password\" class=\"form-label\">New Password</label>\r\n                            <input type=\"password\" class=\"form-control\" id=\"Input_Password\" name=\"Input.Password\" required />\r\n                        </div>\r\n                        <div class=\"mb-3\">\r\n                            <label for=\"Input_ConfirmPassword\" class=\"form-label\">Confirm New Password</label>\r\n                            <input type=\"password\" class=\"form-control\" id=\"Input_ConfirmPassword\" name=\"Input.ConfirmPassword\" required />\r\n                        </div>\r\n                        <button type=\"submit\" class=\"btn btn-success\">Reset Password</button>\r\n                    </form>\r\n                </div>", new DateTime(2025, 6, 4, 19, 17, 20, 772, DateTimeKind.Utc).AddTicks(7951), null, null, "reset-password", "Display", "Reset Password", null, "Public" },
+                    { 7, "\r\n                    <div class=\"container mt-5\">\r\n                    <h2 class=\"mb-4\">Change your password</h2>\r\n                    <form action=\"/Identity/Account/Manage/ChangePassword\" method=\"post\">\r\n                        <div class=\"mb-3\">\r\n                            <label for=\"Input_OldPassword\" class=\"form-label\">Current Password</label>\r\n                            <input type=\"password\" class=\"form-control\" id=\"Input_OldPassword\" name=\"Input.OldPassword\" required />\r\n                        </div>\r\n                        <div class=\"mb-3\">\r\n                            <label for=\"Input_NewPassword\" class=\"form-label\">New Password</label>\r\n                            <input type=\"password\" class=\"form-control\" id=\"Input_NewPassword\" name=\"Input.NewPassword\" required />\r\n                        </div>\r\n                        <div class=\"mb-3\">\r\n                            <label for=\"Input_ConfirmPassword\" class=\"form-label\">Confirm New Password</label>\r\n                            <input type=\"password\" class=\"form-control\" id=\"Input_ConfirmPassword\" name=\"Input.ConfirmPassword\" required />\r\n                        </div>\r\n                        <button type=\"submit\" class=\"btn btn-success\">Change Password</button>\r\n                    </form>\r\n                </div>", new DateTime(2025, 6, 4, 19, 17, 20, 772, DateTimeKind.Utc).AddTicks(7952), null, null, "change-password", "Display", "Change Password", null, "Public" }
                 });
 
             migrationBuilder.InsertData(
@@ -348,9 +367,24 @@ namespace SCMS.Data.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "SocialMediaPlatforms",
+                columns: new[] { "Id", "IconClass", "Name" },
+                values: new object[,]
+                {
+                    { 1, "fab fa-facebook-f", "Facebook" },
+                    { 2, "fab fa-twitter", "Twitter" },
+                    { 3, "fab fa-instagram", "Instagram" },
+                    { 4, "fab fa-youtube", "YouTube" },
+                    { 5, "fab fa-linkedin-in", "LinkedIn" },
+                    { 6, "fab fa-tiktok", "TikTok" },
+                    { 7, "fab fa-pinterest-p", "Pinterest" },
+                    { 8, "fas fa-globe", "Bluesky" }
+                });
+
+            migrationBuilder.InsertData(
                 table: "ThemeSettings",
                 columns: new[] { "Id", "Description", "DisplayName", "Favicon", "Name", "PreviewImage", "SetOn" },
-                values: new object[] { 1, "Clean layout with light styling", "Default Theme", "favicon.ico", "default", "/Themes/Default/preview.png", new DateTime(2025, 6, 4, 1, 11, 13, 82, DateTimeKind.Utc).AddTicks(4723) });
+                values: new object[] { 1, "Clean layout with light styling", "Default Theme", "favicon.ico", "default", "/Themes/Default/preview.png", new DateTime(2025, 6, 4, 19, 17, 20, 772, DateTimeKind.Utc).AddTicks(7851) });
 
             migrationBuilder.InsertData(
                 table: "MenuItems",
@@ -358,7 +392,7 @@ namespace SCMS.Data.Migrations
                 values: new object[,]
                 {
                     { 1, true, "Main", 99, null, null, 1, "Admin", "#" },
-                    { 2, true, "Main", 0, 8, 1, 1, "Site Settings", "/admin/settings" },
+                    { 2, true, "Main", 0, null, 1, 1, "Site Settings", "/admin/settings" },
                     { 100, true, "Main", 0, 1, null, 3, "Home", null }
                 });
 
@@ -375,21 +409,6 @@ namespace SCMS.Data.Migrations
                 table: "SiteSettings",
                 columns: new[] { "Id", "ContactAddress", "ContactEmail", "ContactPhone", "Copyright", "Logo", "SiteName", "Tagline", "ThemeId" },
                 values: new object[] { 1, null, null, null, null, null, "SCMS Site", "Powered by SCMS", 1 });
-
-            migrationBuilder.InsertData(
-                table: "SocialMedias",
-                columns: new[] { "Id", "IconClass", "Name", "SiteSettingsId", "Url" },
-                values: new object[,]
-                {
-                    { 1, "fab fa-facebook-f", "Facebook", 1, "#" },
-                    { 2, "fab fa-twitter", "Twitter", 1, "#" },
-                    { 3, "fab fa-instagram", "Instagram", 1, "#" },
-                    { 4, "fab fa-youtube", "YouTube", 1, "#" },
-                    { 5, "fab fa-linkedin-in", "LinkedIn", 1, "#" },
-                    { 6, "fab fa-tiktok", "TikTok", 1, "#" },
-                    { 7, "fab fa-pinterest-p", "Pinterest", 1, "#" },
-                    { 8, "fas fa-globe", "Bluesky", 1, "#" }
-                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -449,9 +468,14 @@ namespace SCMS.Data.Migrations
                 column: "ThemeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SocialMedias_SiteSettingsId",
-                table: "SocialMedias",
+                name: "IX_SiteSocialLinks_SiteSettingsId",
+                table: "SiteSocialLinks",
                 column: "SiteSettingsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SiteSocialLinks_SocialMediaPlatformId",
+                table: "SiteSocialLinks",
+                column: "SocialMediaPlatformId");
         }
 
         /// <inheritdoc />
@@ -479,7 +503,7 @@ namespace SCMS.Data.Migrations
                 name: "SecurityLevelRoles");
 
             migrationBuilder.DropTable(
-                name: "SocialMedias");
+                name: "SiteSocialLinks");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -495,6 +519,9 @@ namespace SCMS.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "SiteSettings");
+
+            migrationBuilder.DropTable(
+                name: "SocialMediaPlatforms");
 
             migrationBuilder.DropTable(
                 name: "ThemeSettings");
