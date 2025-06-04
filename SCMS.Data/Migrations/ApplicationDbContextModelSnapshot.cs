@@ -45,19 +45,19 @@ namespace SCMS.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "3c02aaab-c3b0-4e75-8dcc-ab6836237572",
+                            Id = "e1abed2f-8755-4eb5-9fd0-92351251d23d",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "3c57bed7-e68a-45ae-9b9e-b3a0e4eaa2b6",
+                            Id = "d7e76331-13c2-41ca-b5dc-96c4f1811867",
                             Name = "Editor",
                             NormalizedName = "EDITOR"
                         },
                         new
                         {
-                            Id = "1973a127-9431-4bba-87a7-a0abe88cf796",
+                            Id = "3de76a6c-2a3f-4a14-9805-70e3074f5d62",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -254,6 +254,9 @@ namespace SCMS.Data.Migrations
                     b.Property<int?>("ParentId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("SecurityLevelId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -265,17 +268,42 @@ namespace SCMS.Data.Migrations
 
                     b.HasIndex("PageContentId");
 
+                    b.HasIndex("SecurityLevelId");
+
                     b.ToTable("MenuItems");
 
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            Id = 100,
                             IsVisible = true,
                             MenuGroup = "Main",
                             Order = 0,
                             PageContentId = 1,
+                            SecurityLevelId = 3,
                             Title = "Home"
+                        },
+                        new
+                        {
+                            Id = 1,
+                            IsVisible = true,
+                            MenuGroup = "Main",
+                            Order = 99,
+                            SecurityLevelId = 1,
+                            Title = "Admin",
+                            Url = "#"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            IsVisible = true,
+                            MenuGroup = "Main",
+                            Order = 0,
+                            PageContentId = 8,
+                            ParentId = 1,
+                            SecurityLevelId = 1,
+                            Title = "Site Settings",
+                            Url = "/admin/settings"
                         });
                 });
 
@@ -325,8 +353,8 @@ namespace SCMS.Data.Migrations
                         new
                         {
                             Id = 1,
-                            HtmlContent = "\r\n                    <h1 class=\"display-4 mb-4\">Welcome</h1>\r\n                    <p class=\"lead mb-4\">This is your first SCMS page. Edit it in the admin panel.</p>\r\n                    <form action=\"/seed-sample-content\" method=\"post\">\r\n                        <button type=\"submit\" class=\"btn btn-warning\">Seed Sample Content</button>\r\n                    </form>",
-                            LastUpdated = new DateTime(2025, 6, 2, 18, 56, 23, 525, DateTimeKind.Utc).AddTicks(6015),
+                            HtmlContent = "\r\n                    <h1 class=\"display-4 mb-4\">Welcome</h1>\r\n                    <p class=\"lead mb-4\">This is your first SCMS page. Edit it in the admin panel.</p>",
+                            LastUpdated = new DateTime(2025, 6, 4, 1, 11, 13, 82, DateTimeKind.Utc).AddTicks(4776),
                             PageKey = "home",
                             TemplateKey = "Display",
                             Title = "Welcome",
@@ -335,8 +363,8 @@ namespace SCMS.Data.Migrations
                         new
                         {
                             Id = 2,
-                            HtmlContent = "\r\n                    <div class=\"d-flex align-items-center justify-content-center\">\r\n                        <div class=\"card shadow p-4\" style=\"max-width: 400px; width: 100%;\">\r\n                            <h2 class=\"text-center mb-4\">Login</h2>\r\n                            <form action=\"/Identity/Account/Login\" method=\"post\">\r\n                                <input name=\"__RequestVerificationToken\" type=\"hidden\" value=\"{{ANTIFORGERY_TOKEN}}\" />\r\n                                <div class=\"mb-3\">\r\n                                    <label for=\"email\" class=\"form-label\">Email address</label>\r\n                                    <input type=\"email\" class=\"form-control\" id=\"email\" name=\"Input.Email\" required />\r\n                                </div>\r\n                                <div class=\"mb-3\">\r\n                                    <label for=\"password\" class=\"form-label\">Password</label>\r\n                                    <input type=\"password\" class=\"form-control\" id=\"password\" name=\"Input.Password\" required />\r\n                                </div>\r\n                                <div class=\"mb-3 form-check\">\r\n                                    <input type=\"checkbox\" class=\"form-check-input\" id=\"rememberMe\" name=\"Input.RememberMe\" />\r\n                                    <label class=\"form-check-label\" for=\"rememberMe\">Remember Me</label>\r\n                                </div>\r\n                                <button type=\"submit\" class=\"btn btn-primary w-100\">Login</button>\r\n                            </form>\r\n                            <div class=\"mt-3 text-center\">\r\n                                <a href=\"/forgot-password\">Forgot Password?</a><br />\r\n                                <a href=\"/register\">Don't have an account? Register</a>\r\n                            </div>\r\n                        </div>\r\n                    </div>",
-                            LastUpdated = new DateTime(2025, 6, 2, 18, 56, 23, 525, DateTimeKind.Utc).AddTicks(6039),
+                            HtmlContent = "\r\n                    <div class=\"d-flex align-items-center justify-content-center\">\r\n                        <div class=\"card shadow p-4\" style=\"max-width: 400px; width: 100%;\">\r\n                            <h2 class=\"text-center mb-4\">Login</h2>\r\n                            <form action=\"/Identity/Account/Login\" method=\"post\">\r\n                                <input name=\"__RequestVerificationToken\" type=\"hidden\" value=\"{{ANTIFORGERY_TOKEN}}\" />\r\n                                <div class=\"mb-3\">\r\n                                    <label for=\"email\" class=\"form-label\">Email address</label>\r\n                                    <input type=\"email\" class=\"form-control\" id=\"email\" name=\"Input.Email\" required />\r\n                                </div>\r\n                                <div class=\"mb-3\">\r\n                                    <label for=\"password\" class=\"form-label\">Password</label>\r\n                                    <input type=\"password\" class=\"form-control\" id=\"password\" name=\"Input.Password\" required />\r\n                                </div>\r\n                                <div class=\"mb-3 form-check\">\r\n                                    <input type=\"checkbox\" class=\"form-check-input\" id=\"rememberMe\" name=\"Input.RememberMe\" />\r\n                                    <label class=\"form-check-label\" for=\"rememberMe\">Remember Me</label>\r\n                                </div>\r\n                                <button type=\"submit\" class=\"btn btn-primary w-100\">Login</button>\r\n                            </form>\r\n                            <div class=\"mt-3 text-center\">\r\n                                <a href=\"/forgot-password\">Forgot Password?</a><br />\r\n                            </div>\r\n                        </div>\r\n                    </div>",
+                            LastUpdated = new DateTime(2025, 6, 4, 1, 11, 13, 82, DateTimeKind.Utc).AddTicks(4825),
                             PageKey = "portal-access",
                             TemplateKey = "Display",
                             Title = "Login",
@@ -346,7 +374,7 @@ namespace SCMS.Data.Migrations
                         {
                             Id = 3,
                             HtmlContent = "\r\n                <div class=\"container mt-5 text-center\">\r\n                    <h2>You have been logged out</h2>\r\n                    <p>Thank you for visiting. See you again soon!</p>\r\n                    <a href=\"/\" class=\"btn btn-primary mt-3\">Return Home</a>\r\n                </div>",
-                            LastUpdated = new DateTime(2025, 6, 2, 18, 56, 23, 525, DateTimeKind.Utc).AddTicks(6040),
+                            LastUpdated = new DateTime(2025, 6, 4, 1, 11, 13, 82, DateTimeKind.Utc).AddTicks(4826),
                             PageKey = "portal-logout",
                             TemplateKey = "Display",
                             Title = "Logout",
@@ -356,7 +384,7 @@ namespace SCMS.Data.Migrations
                         {
                             Id = 4,
                             HtmlContent = "\r\n                    <div class=\"container mt-5\">\r\n                        <h2 class=\"mb-4\">Register</h2>\r\n                        <form action=\"/Identity/Account/Register\" method=\"post\">\r\n                            <div class=\"mb-3\">\r\n                                <label for=\"Input_Email\" class=\"form-label\">Email address</label>\r\n                                <input type=\"email\" class=\"form-control\" id=\"Input_Email\" name=\"Input.Email\" required />\r\n                            </div>\r\n                            <div class=\"mb-3\">\r\n                                <label for=\"Input_Password\" class=\"form-label\">Password</label>\r\n                                <input type=\"password\" class=\"form-control\" id=\"Input_Password\" name=\"Input.Password\" required />\r\n                            </div>\r\n                            <div class=\"mb-3\">\r\n                                <label for=\"Input_ConfirmPassword\" class=\"form-label\">Confirm Password</label>\r\n                                <input type=\"password\" class=\"form-control\" id=\"Input_ConfirmPassword\" name=\"Input.ConfirmPassword\" required />\r\n                            </div>\r\n                            <button type=\"submit\" class=\"btn btn-primary\">Register</button>\r\n                        </form>\r\n                        <div class=\"mt-3\">\r\n                            <a href=\"/Identity/Account/Login\">Already have an account? Login here</a>\r\n                        </div>\r\n                    </div>",
-                            LastUpdated = new DateTime(2025, 6, 2, 18, 56, 23, 525, DateTimeKind.Utc).AddTicks(6041),
+                            LastUpdated = new DateTime(2025, 6, 4, 1, 11, 13, 82, DateTimeKind.Utc).AddTicks(4827),
                             PageKey = "register",
                             TemplateKey = "Display",
                             Title = "Register",
@@ -366,7 +394,7 @@ namespace SCMS.Data.Migrations
                         {
                             Id = 5,
                             HtmlContent = "\r\n                <div class=\"container mt-5\">\r\n                    <h2 class=\"mb-4\">Forgot your password?</h2>\r\n                    <form action=\"/Identity/Account/ForgotPassword\" method=\"post\">\r\n                        <div class=\"mb-3\">\r\n                            <label for=\"Input_Email\" class=\"form-label\">Email address</label>\r\n                            <input type=\"email\" class=\"form-control\" id=\"Input_Email\" name=\"Input.Email\" required />\r\n                        </div>\r\n                        <button type=\"submit\" class=\"btn btn-warning\">Send Password Reset Link</button>\r\n                    </form>\r\n                    <div class=\"mt-3\">\r\n                        <a href=\"/Identity/Account/Login\">Back to Login</a>\r\n                    </div>\r\n                </div>",
-                            LastUpdated = new DateTime(2025, 6, 2, 18, 56, 23, 525, DateTimeKind.Utc).AddTicks(6042),
+                            LastUpdated = new DateTime(2025, 6, 4, 1, 11, 13, 82, DateTimeKind.Utc).AddTicks(4828),
                             PageKey = "forgot-password",
                             TemplateKey = "Display",
                             Title = "Forgot Password",
@@ -376,7 +404,7 @@ namespace SCMS.Data.Migrations
                         {
                             Id = 6,
                             HtmlContent = "\r\n                <div class=\"container mt-5\">\r\n                    <h2 class=\"mb-4\">Reset your password</h2>\r\n                    <form action=\"/Identity/Account/ResetPassword\" method=\"post\">\r\n                        <div class=\"mb-3\">\r\n                            <label for=\"Input_Email\" class=\"form-label\">Email address</label>\r\n                            <input type=\"email\" class=\"form-control\" id=\"Input_Email\" name=\"Input.Email\" required />\r\n                        </div>\r\n                        <div class=\"mb-3\">\r\n                            <label for=\"Input_Password\" class=\"form-label\">New Password</label>\r\n                            <input type=\"password\" class=\"form-control\" id=\"Input_Password\" name=\"Input.Password\" required />\r\n                        </div>\r\n                        <div class=\"mb-3\">\r\n                            <label for=\"Input_ConfirmPassword\" class=\"form-label\">Confirm New Password</label>\r\n                            <input type=\"password\" class=\"form-control\" id=\"Input_ConfirmPassword\" name=\"Input.ConfirmPassword\" required />\r\n                        </div>\r\n                        <button type=\"submit\" class=\"btn btn-success\">Reset Password</button>\r\n                    </form>\r\n                </div>",
-                            LastUpdated = new DateTime(2025, 6, 2, 18, 56, 23, 525, DateTimeKind.Utc).AddTicks(6043),
+                            LastUpdated = new DateTime(2025, 6, 4, 1, 11, 13, 82, DateTimeKind.Utc).AddTicks(4829),
                             PageKey = "reset-password",
                             TemplateKey = "Display",
                             Title = "Reset Password",
@@ -386,11 +414,101 @@ namespace SCMS.Data.Migrations
                         {
                             Id = 7,
                             HtmlContent = "\r\n                    <div class=\"container mt-5\">\r\n                    <h2 class=\"mb-4\">Change your password</h2>\r\n                    <form action=\"/Identity/Account/Manage/ChangePassword\" method=\"post\">\r\n                        <div class=\"mb-3\">\r\n                            <label for=\"Input_OldPassword\" class=\"form-label\">Current Password</label>\r\n                            <input type=\"password\" class=\"form-control\" id=\"Input_OldPassword\" name=\"Input.OldPassword\" required />\r\n                        </div>\r\n                        <div class=\"mb-3\">\r\n                            <label for=\"Input_NewPassword\" class=\"form-label\">New Password</label>\r\n                            <input type=\"password\" class=\"form-control\" id=\"Input_NewPassword\" name=\"Input.NewPassword\" required />\r\n                        </div>\r\n                        <div class=\"mb-3\">\r\n                            <label for=\"Input_ConfirmPassword\" class=\"form-label\">Confirm New Password</label>\r\n                            <input type=\"password\" class=\"form-control\" id=\"Input_ConfirmPassword\" name=\"Input.ConfirmPassword\" required />\r\n                        </div>\r\n                        <button type=\"submit\" class=\"btn btn-success\">Change Password</button>\r\n                    </form>\r\n                </div>",
-                            LastUpdated = new DateTime(2025, 6, 2, 18, 56, 23, 525, DateTimeKind.Utc).AddTicks(6044),
+                            LastUpdated = new DateTime(2025, 6, 4, 1, 11, 13, 82, DateTimeKind.Utc).AddTicks(4829),
                             PageKey = "change-password",
                             TemplateKey = "Display",
                             Title = "Change Password",
                             Visibility = "Public"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            HtmlContent = "\r\n                    <div class=\"container mt-5\">\r\n                        <h2 class=\"mb-4\">Edit Site Settings</h2>\r\n                        <form action=\"/admin/settings/save\" method=\"post\">\r\n                            <div class=\"mb-3\">\r\n                                <label for=\"SiteName\" class=\"form-label\">Site Name</label>\r\n                                <input type=\"text\" class=\"form-control\" id=\"SiteName\" name=\"SiteSettings.SiteName\" required />\r\n                            </div>\r\n                            <div class=\"mb-3\">\r\n                                <label for=\"Tagline\" class=\"form-label\">Tagline</label>\r\n                                <input type=\"text\" class=\"form-control\" id=\"Tagline\" name=\"SiteSettings.Tagline\" />\r\n                            </div>\r\n                            <div class=\"mb-3\">\r\n                                <label for=\"ThemeId\" class=\"form-label\">Theme</label>\r\n                                <select class=\"form-select\" id=\"ThemeId\" name=\"SiteSettings.ThemeId\">\r\n                                    {{#each Themes}}\r\n                                    <option value=\"{{Id}}\" {{#if IsSelected}}selected{{/if}}>{{DisplayName}}</option>\r\n                                    {{/each}}\r\n                                </select>\r\n                            </div>\r\n                            <div class=\"mb-3\">\r\n                                <label for=\"ContactEmail\" class=\"form-label\">Contact Email</label>\r\n                                <input type=\"email\" class=\"form-control\" id=\"ContactEmail\" name=\"SiteSettings.ContactEmail\" />\r\n                            </div>\r\n                            <div class=\"mb-3\">\r\n                                <label for=\"ContactPhone\" class=\"form-label\">Contact Phone</label>\r\n                                <input type=\"text\" class=\"form-control\" id=\"ContactPhone\" name=\"SiteSettings.ContactPhone\" />\r\n                            </div>\r\n                            <div class=\"mb-3\">\r\n                                <label for=\"ContactAddress\" class=\"form-label\">Contact Address</label>\r\n                                <input type=\"text\" class=\"form-control\" id=\"ContactAddress\" name=\"SiteSettings.ContactAddress\" />\r\n                            </div>\r\n                            <div class=\"mb-3\">\r\n                                <label for=\"Copyright\" class=\"form-label\">Copyright</label>\r\n                                <input type=\"text\" class=\"form-control\" id=\"Copyright\" name=\"SiteSettings.Copyright\" />\r\n                            </div>\r\n                            <div class=\"mb-3\">\r\n                                <label for=\"SocialLinks\" class=\"form-label\">Social Links</label>\r\n                                <input type=\"text\" class=\"form-control\" id=\"SocialLinks\" name=\"SiteSettings.SocialLinks\" value=\"TODO: Build link editor\" />\r\n                            </div>\r\n                            <button type=\"submit\" class=\"btn btn-primary\">Save Changes</button>\r\n                        </form>\r\n                    </div>",
+                            LastUpdated = new DateTime(2025, 6, 4, 1, 11, 13, 82, DateTimeKind.Utc).AddTicks(4830),
+                            PageKey = "admin/settings",
+                            TemplateKey = "Display",
+                            Title = "Site Settings",
+                            Visibility = "Public"
+                        });
+                });
+
+            modelBuilder.Entity("SCMS.Data.SecurityLevel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsSystem")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SecurityLevels");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Can modify site settings.",
+                            IsSystem = true,
+                            Name = "Administrator"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Registered user for protected pages.",
+                            IsSystem = true,
+                            Name = "User"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "Public access level.",
+                            IsSystem = true,
+                            Name = "Anonymous"
+                        });
+                });
+
+            modelBuilder.Entity("SCMS.Data.SecurityLevelRole", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("SecurityLevelId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SecurityLevelId");
+
+                    b.ToTable("SecurityLevelRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            RoleName = "Administrator",
+                            SecurityLevelId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            RoleName = "User",
+                            SecurityLevelId = 2
                         });
                 });
 
@@ -573,7 +691,7 @@ namespace SCMS.Data.Migrations
                             Favicon = "favicon.ico",
                             Name = "default",
                             PreviewImage = "/Themes/Default/preview.png",
-                            SetOn = new DateTime(2025, 6, 2, 18, 56, 23, 525, DateTimeKind.Utc).AddTicks(5964)
+                            SetOn = new DateTime(2025, 6, 4, 1, 11, 13, 82, DateTimeKind.Utc).AddTicks(4723)
                         });
                 });
 
@@ -634,7 +752,26 @@ namespace SCMS.Data.Migrations
                         .WithMany()
                         .HasForeignKey("PageContentId");
 
+                    b.HasOne("SCMS.Data.SecurityLevel", "SecurityLevel")
+                        .WithMany()
+                        .HasForeignKey("SecurityLevelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("PageContent");
+
+                    b.Navigation("SecurityLevel");
+                });
+
+            modelBuilder.Entity("SCMS.Data.SecurityLevelRole", b =>
+                {
+                    b.HasOne("SCMS.Data.SecurityLevel", "SecurityLevel")
+                        .WithMany()
+                        .HasForeignKey("SecurityLevelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SecurityLevel");
                 });
 
             modelBuilder.Entity("SCMS.Data.SiteSettings", b =>

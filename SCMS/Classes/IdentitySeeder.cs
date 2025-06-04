@@ -20,9 +20,9 @@ namespace SCMS.Classes
             string adminPassword = configuration["AdminPassword"] ?? Environment.GetEnvironmentVariable("AdminPassword") ?? "P@ssword1";
             string adminUsername = configuration["AdminUsername"] ?? Environment.GetEnvironmentVariable("AdminUsername") ?? "AdminUser";
 
-            if (!await roleManager.RoleExistsAsync("Admin"))
+            if (!await roleManager.RoleExistsAsync("Administrator"))
             {
-                await roleManager.CreateAsync(new IdentityRole("Admin"));
+                await roleManager.CreateAsync(new IdentityRole("Administrator"));
             }
 
             bool isDefaultPassword = adminPassword == "P@ssword1";
@@ -69,7 +69,7 @@ namespace SCMS.Classes
                     var result = await userManager.CreateAsync(user, adminPassword);
                     if (result.Succeeded)
                     {
-                        await userManager.AddToRoleAsync(user, "Admin");
+                        await userManager.AddToRoleAsync(user, "Administrator");
                     }
                     else
                     {

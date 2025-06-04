@@ -12,6 +12,10 @@ namespace SCMS.Data
         public string MenuGroup { get; set; } = "Main"; // e.g. Main, Footer, Sidebar
         public int Order { get; set; } = 0;
         public bool IsVisible { get; set; } = true;
+        public int SecurityLevelId { get; set; }
+
+        [ForeignKey(nameof(SecurityLevelId))]
+        public SecurityLevel SecurityLevel { get; set; } = default!;
 
         [ForeignKey(nameof(PageContentId))]
         public PageContent? PageContent { get; set; }

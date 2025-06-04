@@ -196,7 +196,58 @@ namespace SCMS.Services
                     </form>
                 </div>",
                     LastUpdated = DateTime.UtcNow
+                },
+                new PageContent
+                {
+                    Id = 8,
+                    PageKey = "admin/settings",
+                    Title = "Site Settings",
+                    HtmlContent = @"
+                    <div class=""container mt-5"">
+                        <h2 class=""mb-4"">Edit Site Settings</h2>
+                        <form action=""/admin/settings/save"" method=""post"">
+                            <div class=""mb-3"">
+                                <label for=""SiteName"" class=""form-label"">Site Name</label>
+                                <input type=""text"" class=""form-control"" id=""SiteName"" name=""SiteSettings.SiteName"" required />
+                            </div>
+                            <div class=""mb-3"">
+                                <label for=""Tagline"" class=""form-label"">Tagline</label>
+                                <input type=""text"" class=""form-control"" id=""Tagline"" name=""SiteSettings.Tagline"" />
+                            </div>
+                            <div class=""mb-3"">
+                                <label for=""ThemeId"" class=""form-label"">Theme</label>
+                                <select class=""form-select"" id=""ThemeId"" name=""SiteSettings.ThemeId"">
+                                    {{#each Themes}}
+                                    <option value=""{{Id}}"" {{#if IsSelected}}selected{{/if}}>{{DisplayName}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                            <div class=""mb-3"">
+                                <label for=""ContactEmail"" class=""form-label"">Contact Email</label>
+                                <input type=""email"" class=""form-control"" id=""ContactEmail"" name=""SiteSettings.ContactEmail"" />
+                            </div>
+                            <div class=""mb-3"">
+                                <label for=""ContactPhone"" class=""form-label"">Contact Phone</label>
+                                <input type=""text"" class=""form-control"" id=""ContactPhone"" name=""SiteSettings.ContactPhone"" />
+                            </div>
+                            <div class=""mb-3"">
+                                <label for=""ContactAddress"" class=""form-label"">Contact Address</label>
+                                <input type=""text"" class=""form-control"" id=""ContactAddress"" name=""SiteSettings.ContactAddress"" />
+                            </div>
+                            <div class=""mb-3"">
+                                <label for=""Copyright"" class=""form-label"">Copyright</label>
+                                <input type=""text"" class=""form-control"" id=""Copyright"" name=""SiteSettings.Copyright"" />
+                            </div>
+                            <div class=""mb-3"">
+                                <label for=""SocialLinks"" class=""form-label"">Social Links</label>
+                                <input type=""text"" class=""form-control"" id=""SocialLinks"" name=""SiteSettings.SocialLinks"" value=""TODO: Build link editor"" />
+                            </div>
+                            <button type=""submit"" class=""btn btn-primary"">Save Changes</button>
+                        </form>
+                    </div>",
+                    LastUpdated = DateTime.UtcNow
                 }
+
             );
         }
 
@@ -242,26 +293,63 @@ namespace SCMS.Services
                 Title = "Welcome",
                 HtmlContent = @"
                     <h1 class=""display-4 mb-4"">Welcome</h1>
-                    <p class=""lead mb-4"">This is your first SCMS page. Edit it in the admin panel.</p>
-                    <form action=""/seed-sample-content"" method=""post"">
-                        <button type=""submit"" class=""btn btn-warning"">Seed Sample Content</button>
-                    </form>",
+                    <p class=""lead mb-4"">This is your first SCMS page. Edit it in the admin panel.</p>",                    
                 LastUpdated = DateTime.UtcNow
             });
 
+            // Main Menu Items
+            modelBuilder.Entity<MenuItem>().HasData(
+                new MenuItem
+                {
+                    Id = 100,
+                    ParentId = null,
+                    Title = "Home",
+                    Url = null,
+                    PageContentId = 1,
+                    MenuGroup = "Main",
+                    Order = 0,
+                    IsVisible = true,
+                    SecurityLevelId = 3
+                },
+                new MenuItem
+                {
+                    Id = 1,
+                    ParentId = null,
+                    Title = "Admin",
+                    Url = "#",
+                    PageContentId = null,
+                    MenuGroup = "Main",
+                    Order = 99,
+                    IsVisible = true,
+                    SecurityLevelId = 1
+                },
+                new MenuItem
+                {
+                    Id = 2,
+                    ParentId = 1,
+                    Title = "Site Settings",
+                    Url = "/admin/settings",
+                    PageContentId = 8,
+                    MenuGroup = "Main",
+                    Order = 0,
+                    IsVisible = true,
+                    SecurityLevelId = 1
+                }
+            );
 
-            // Main Menu Default Item
-            modelBuilder.Entity<MenuItem>().HasData(new MenuItem
-            {
-                Id = 1,
-                ParentId = null,
-                Title = "Home",
-                Url = null,
-                PageContentId = 1, // Link to Home PageContent
-                MenuGroup = "Main",
-                Order = 0,
-                IsVisible = true
-            });
+
+            modelBuilder.Entity<SecurityLevel>().HasData(
+                new SecurityLevel { Id = 1, Name = "Administrator", Description = "Can modify site settings.", IsSystem = true },
+                new SecurityLevel { Id = 2, Name = "User", Description = "Registered user for protected pages.", IsSystem = true },
+                new SecurityLevel { Id = 3, Name = "Anonymous", Description = "Public access level.", IsSystem = true }
+            );
+            modelBuilder.Entity<SecurityLevelRole>().HasData(
+                new SecurityLevelRole { Id = 1, SecurityLevelId = 1, RoleName = "Administrator" },
+                new SecurityLevelRole { Id = 2, SecurityLevelId = 2, RoleName = "User" }
+                // Anonymous is handled as fallback when no auth roles are matched
+            );
+            
+
         }
     }
 }

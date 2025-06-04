@@ -61,16 +61,6 @@ namespace SCMS.Controllers
             return Redirect("/change-password");
         }
 
-
-
-        [HttpPost]
-        [Route("seed-sample-content")]
-        public IActionResult SeedSampleContent([FromServices] ApplicationDbContext db)
-        {
-            SeedSamplePagesAndMenus(db);
-            return Redirect("/");
-        }
-
         [HttpGet]
         [Route("portal-logout")]
         public async Task<IActionResult> Logout()

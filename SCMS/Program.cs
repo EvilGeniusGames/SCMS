@@ -5,6 +5,8 @@ using SCMS.Interfaces;
 using SCMS.Services;
 using SCMS.Classes;
 using SCMS.Areas.Identity.Services;
+using SCMS.Services.Auth;
+using SCMS.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,13 +47,15 @@ builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddScoped<IPageService, PageService>();
-
 builder.Services.AddHttpContextAccessor();
+// Add the user context service
+builder.Services.AddScoped<CurrentUserContext>();
 
 var app = builder.Build();
 
 ThemeEngine.HttpContextAccessor = app.Services.GetRequiredService<IHttpContextAccessor>();
 
+app.UseMiddleware<CurrentUserMiddleware>();
 // Ensure database folder exists BEFORE context resolution
 if (!Directory.Exists("database"))
 {

@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿// 🧠 Breadcrumb: SCMS/Services/ThemeEngine.cs
+
+using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -7,8 +9,9 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
-using SCMS.Classes; // 👈 MenuBuilder
+using SCMS.Classes;
 using Microsoft.AspNetCore.Antiforgery;
+using System.Security.Claims;
 
 namespace SCMS.Services
 {
@@ -84,7 +87,8 @@ namespace SCMS.Services
             {
                 var orientation = match.Groups["orientation"].Value;
                 var group = match.Groups["group"].Value;
-                return MenuBuilder.GenerateMenuHtml(db, group, orientation);
+                var principal = HttpContextAccessor?.HttpContext?.User ?? new ClaimsPrincipal();
+                return MenuBuilder.GenerateMenuHtml(db, group, orientation, principal);
             });
 
             // Handle <cms:SiteLogo height="..." />

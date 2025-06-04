@@ -4,6 +4,7 @@ using System.Text;
 using SCMS.Models;
 using SCMS.Services.Theme;
 using SCMS.Services.Template;
+using System.Security.Claims;
 
 namespace SCMS.Classes
 {
@@ -11,7 +12,7 @@ namespace SCMS.Classes
     public static class MenuBuilder
     {
         // Generates the complete HTML for a menu group with a given orientation (horizontal or vertical)
-        public static string GenerateMenuHtml(ApplicationDbContext db, string group, string orientation)
+        public static string GenerateMenuHtml(ApplicationDbContext db, string group, string orientation, ClaimsPrincipal user)
         {
             var allItems = db.MenuItems
                 .Where(m => m.MenuGroup == group && m.IsVisible)
@@ -20,12 +21,15 @@ namespace SCMS.Classes
 
             if (!allItems.Any()) return "";
 
-            var topLevelItems = allItems.Where(m => m.ParentId == null).ToList();
+            var topLevelItems = allItems
+            .Where(m => m.ParentId == null && IsMenuItemAuthorized(db, m, user))
+            .ToList();
+
 
             // Convert to MenuRenderModel
             var model = new MenuRenderModel
             {
-                Items = topLevelItems.Select(t => ConvertToModel(t, allItems, db)).ToList()
+                Items = topLevelItems.Select(t => ConvertToModel(t, allItems, db, user)).ToList()
             };
 
             var context = new Dictionary<string, object>
@@ -59,7 +63,7 @@ namespace SCMS.Classes
             }
         }
         // Converts a MenuItem to a MenuItemModel for rendering
-        private static MenuItemModel ConvertToModel(MenuItem item, List<MenuItem> allItems, ApplicationDbContext db)
+        private static MenuItemModel ConvertToModel(MenuItem item, List<MenuItem> allItems, ApplicationDbContext db, ClaimsPrincipal user)
         {
             string url = "#";
 
@@ -72,9 +76,9 @@ namespace SCMS.Classes
             }
 
             var children = allItems
-                .Where(m => m.ParentId.HasValue && m.ParentId.Value == item.Id)
+                .Where(m => m.ParentId == item.Id && IsMenuItemAuthorized(db, m, user))
                 .OrderBy(m => m.Order)
-                .Select(child => ConvertToModel(child, allItems, db))
+                .Select(child => ConvertToModel(child, allItems, db, user))
                 .ToList();
 
             return new MenuItemModel
@@ -120,5 +124,21 @@ namespace SCMS.Classes
             html.Append("</li>");
             return html.ToString();
         }
+        private static bool IsMenuItemAuthorized(ApplicationDbContext db, MenuItem item, ClaimsPrincipal user)
+        {
+            var securityLevel = db.SecurityLevels
+                .FirstOrDefault(s => s.Id == item.SecurityLevelId);
+
+            if (securityLevel == null || securityLevel.Name == "Anonymous")
+                return true;
+
+            var allowedRoles = db.SecurityLevelRoles
+                .Where(r => r.SecurityLevelId == item.SecurityLevelId)
+                .Select(r => r.RoleName)
+                .ToList();
+
+            return allowedRoles.Any(user.IsInRole);
+        }
+
     }
 }
