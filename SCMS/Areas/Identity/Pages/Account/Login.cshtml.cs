@@ -78,26 +78,19 @@ namespace SCMS.Areas.Identity.Pages.Account
 
             // debug statement to check if user is found
             var use = await _signInManager.UserManager.FindByEmailAsync(Input.Email);
-            Console.WriteLine($"[DEBUG] User found: {use?.Email ?? "null"}");
             if (use != null)
             {
                 var isValid = await _signInManager.UserManager.CheckPasswordAsync(use, Input.Password);
-                Console.WriteLine($"[DEBUG] Password valid: {isValid}");
             }
 
             var user = await _signInManager.UserManager.FindByEmailAsync(Input.Email);
             if (user == null)
             {
-                Console.WriteLine("[DEBUG] User not found.");
                 TempData["Error"] = "Invalid login attempt.";
                 return Redirect("/portal-access");
             }
 
-            Console.WriteLine($"[DEBUG] Trying PasswordSignIn with UserName: {user.UserName}");
-
             var result = await _signInManager.PasswordSignInAsync(user.UserName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
-
-            Console.WriteLine($"[DEBUG] SignIn result: Succeeded={result.Succeeded}, IsLockedOut={result.IsLockedOut}, RequiresTwoFactor={result.RequiresTwoFactor}, IsNotAllowed={result.IsNotAllowed}");
 
             if (result.Succeeded)
             {

@@ -282,6 +282,18 @@ namespace SCMS.Services
                     Order = 0,
                     IsVisible = true,
                     SecurityLevelId = 1
+                },
+                new MenuItem
+                {
+                    Id = 3,
+                    ParentId = 1,
+                    Title = "Social Media",
+                    Url = "/admin/socialmedia",
+                    PageContentId = null,
+                    MenuGroup = "Main",
+                    Order = 0,
+                    IsVisible = true,
+                    SecurityLevelId = 1
                 }
             );
 

@@ -21,7 +21,6 @@ namespace SCMS.Controllers
         [Route("{slug?}")]
         public async Task<IActionResult> RenderPage(string? slug = "home")
         {
-            Console.WriteLine($"[DEBUG] Requested slug: {slug}");
             var page = await _pageService.GetPageBySlugAsync(slug ?? "home");
             if (page == null) return NotFound();
 
