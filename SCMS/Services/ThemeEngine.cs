@@ -1,6 +1,4 @@
-﻿// 🧠 Breadcrumb: SCMS/Services/ThemeEngine.cs
-
-using System.IO;
+﻿using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -63,8 +61,8 @@ namespace SCMS.Services
             var user = HttpContextAccessor?.HttpContext?.User;
             bool isAuthenticated = user?.Identity?.IsAuthenticated ?? false;
             string loginStatusHtml = isAuthenticated
-                ? "<div class=\"login-status\"><a href=\"/portal-logout\">Logout</a></div>"
-                : "<div class=\"login-status\"><a href=\"/portal-access\">Login</a></div>";
+                ? "<a href=\"/portal-logout\">Logout</a>"
+                : "<a href=\"/portal-access\">Login</a>";
             result = result.Replace("<cms:LoginStatus />", loginStatusHtml);
 
             // Replace <cms:ErrorMessage /> with alert if TempData["Error"] exists
@@ -99,12 +97,10 @@ namespace SCMS.Services
                 return $"<img src=\"{logoUrl}\" alt=\"Site Logo\" style=\"max-height: {height}px;\">";
             });
 
-            // Catch unknown tokens
-            result = Regex.Replace(result, @"<cms:[^>]+\/>", match =>
-            {
-                var safeToken = match.Value.Replace("<", "(").Replace(">", ")");
-                return $"<span style='color: red; font-weight: bold;'>[UNKNOWN TOKEN: {safeToken}]</span>";
-            });
+            var displayName = user?.Identity?.IsAuthenticated == true
+            ? (HttpContextAccessor?.HttpContext?.User.Identity?.Name ?? "User")
+            : "Guest";
+            result = result.Replace("<cms:UserName />", displayName);
 
             // Handle {{ANTIFORGERY_TOKEN}} replacement
             if (result.Contains("{{ANTIFORGERY_TOKEN}}"))
@@ -114,6 +110,13 @@ namespace SCMS.Services
                 var tokenValue = tokenSet?.RequestToken ?? "";
                 result = result.Replace("{{ANTIFORGERY_TOKEN}}", tokenValue);
             }
+
+            // Catch unknown tokens Leave at bottom
+            result = Regex.Replace(result, @"<cms:[^>]+\/>", match =>
+            {
+                var safeToken = match.Value.Replace("<", "(").Replace(">", ")");
+                return $"<span style='color: red; font-weight: bold;'>[UNKNOWN TOKEN: {safeToken}]</span>";
+            });
 
             return result;
         }

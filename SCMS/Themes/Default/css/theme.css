@@ -5,10 +5,12 @@
     height: auto;
 }
 
-/* Login/Logout button spacing */
 .login-status {
     font-size: 0.9rem;
     white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 /* Footer slight adjustments */
