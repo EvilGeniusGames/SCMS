@@ -29,12 +29,12 @@
 ### 🖼️ Diagram
 
 ```mermaid
-graph TD
+flowchart TD
     A[Controller] --> B[Load Data & Model]
     B --> C[RazorRenderer.RenderViewAsync]
     C --> D[HTML Fragment Output]
     D --> E[ThemeEngine.RenderAsync]
     E --> F[Token Replacement in Layout]
     F --> G[Final Themed HTML Page]
-    G --> H[return Content()]
+    G --> H[return Content]
 ```

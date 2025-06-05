@@ -1,5 +1,5 @@
 
-<img src="SCMS_Logo.png" alt="SCMS Logo" style="max-width: 300px; height: auto;" />
+<img src="./Images/SCMS_Logo.png" alt="SCMS Logo" style="max-width: 300px; height: auto;" />
 
 # Simple Content Management System Planning
 

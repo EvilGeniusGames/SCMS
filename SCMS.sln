@@ -17,10 +17,15 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 	ProjectSection(SolutionItems) = preProject
 		Documentation\SCMSPlanning.md = Documentation\SCMSPlanning.md
-		Documentation\SCMS_Logo.png = Documentation\SCMS_Logo.png
+		SCMS.Data\SCMS_Menu_Editor.md = SCMS.Data\SCMS_Menu_Editor.md
 		SCMS_Menu_Theming.md = SCMS_Menu_Theming.md
 		Documentation\scms_theming_guide.md = Documentation\scms_theming_guide.md
 		SCSM_Razor_Page_rendering.md = SCSM_Razor_Page_rendering.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{9194B884-76D4-45A6-BB8B-E8DAB158EE96}"
+	ProjectSection(SolutionItems) = preProject
+		Documentation\SCMS_Logo.png = Documentation\SCMS_Logo.png
 	EndProjectSection
 EndProject
 Global
@@ -40,6 +45,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9194B884-76D4-45A6-BB8B-E8DAB158EE96} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1ECAC600-46CE-4F6F-AB00-12A1842C4DF8}
