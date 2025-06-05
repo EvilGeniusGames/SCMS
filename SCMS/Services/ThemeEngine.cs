@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SCMS.Classes;
 using Microsoft.AspNetCore.Antiforgery;
 using System.Security.Claims;
+using System.Text;
 
 namespace SCMS.Services
 {
@@ -148,6 +149,20 @@ namespace SCMS.Services
 
                 result = socialLinksRegex.Replace(result, renderedSocial);
             }
+
+            // Handle <cms:Breadcrumb />
+            result = Regex.Replace(result, @"<cms:Breadcrumb\s*\/>", match =>
+            {
+                var requestPath = HttpContextAccessor?.HttpContext?.Request.Path.Value?.Trim('/') ?? "";
+                var principal = HttpContextAccessor?.HttpContext?.User ?? new ClaimsPrincipal();
+
+                string html = MenuBuilder.GenerateBreadcrumbHtml(db, requestPath, principal);
+
+                return string.IsNullOrWhiteSpace(html)
+                    ? "<nav aria-label=\"breadcrumb\"><ol class=\"breadcrumb mb-0\"><li class=\"breadcrumb-item active\" aria-current=\"page\">Home</li></ol></nav>"
+                    : html;
+            });
+
 
             // Catch unknown tokens and replace with UNKNOWN Leave at bottom
             result = Regex.Replace(result, @"<cms:[^>]+\/>", match =>

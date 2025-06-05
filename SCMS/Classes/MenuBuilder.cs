@@ -140,5 +140,45 @@ namespace SCMS.Classes
             return allowedRoles.Any(user.IsInRole);
         }
 
+        public static string GenerateBreadcrumbHtml(ApplicationDbContext db, string currentUrl, ClaimsPrincipal user)
+        {
+            var allItems = db.MenuItems
+                .Where(m => m.IsVisible)
+                .ToList();
+
+            var currentItem = allItems
+                .FirstOrDefault(mi => string.Equals(mi.Url?.Trim('/'), currentUrl.Trim('/'), StringComparison.OrdinalIgnoreCase));
+
+            if (currentItem == null) return "";
+
+            var breadcrumb = new Stack<MenuItem>();
+            var walker = currentItem;
+
+            while (walker != null)
+            {
+                breadcrumb.Push(walker);
+                walker = walker.ParentId.HasValue ? allItems.FirstOrDefault(m => m.Id == walker.ParentId.Value) : null;
+            }
+
+            var sb = new StringBuilder();
+            sb.Append("<nav aria-label=\"breadcrumb\"><ol class=\"breadcrumb mb-0\">");
+
+            while (breadcrumb.Count > 0)
+            {
+                var item = breadcrumb.Pop();
+                var title = item.Title;
+                var url = item.Url?.Trim();
+
+                if (breadcrumb.Count > 0 && !string.IsNullOrWhiteSpace(url) && url != "#")
+                    sb.Append($"<li class=\"breadcrumb-item\"><a href=\"{url}\">{title}</a></li>");
+                else
+                    sb.Append($"<li class=\"breadcrumb-item active\" aria-current=\"page\">{title}</li>");
+
+            }
+
+            sb.Append("</ol></nav>");
+            return sb.ToString();
+        }
+
     }
 }
