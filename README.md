@@ -1,4 +1,4 @@
-<img src="Documentation/SCMS_Logo.png" alt="SCMS Logo" width="300" />
+<img src="SCMS/Documentation/SCMS_Logo.png" alt="SCMS Logo" width="300" />
 
 
 # Simple Content Management System
