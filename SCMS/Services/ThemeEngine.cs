@@ -80,6 +80,13 @@ namespace SCMS.Services
                 result = result.Replace("<cms:ErrorMessage />", errorHtml);
             }
 
+            // site name
+            result = Regex.Replace(result, @"<cms:SiteName\s*\/>", match =>
+            {
+                return siteSettings?.SiteName ?? "Site";
+            });
+
+
             // Handle <cms:Menu />
             var menuRegex = new Regex(
                 @"<cms:Menu\s+(?=.*orientation=""(?<orientation>\w+)""\s*)(?=.*group=""(?<group>[^""]+)""\s*).*?\/?>",
