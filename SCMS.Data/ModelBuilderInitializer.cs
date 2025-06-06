@@ -294,6 +294,18 @@ namespace SCMS.Services
                     Order = 0,
                     IsVisible = true,
                     SecurityLevelId = 1
+                },
+                new MenuItem
+                {
+                    Id = 4,
+                    ParentId = 1,
+                    Title = "Menu/Page Editor",
+                    Url = "/admin/navcontent",
+                    PageContentId = null,
+                    MenuGroup = "Main",
+                    Order = 0,
+                    IsVisible = true,
+                    SecurityLevelId = 1
                 }
             );
 

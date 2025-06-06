@@ -1,0 +1,22 @@
+﻿@model List<SCMS.Data.MenuItem>
+
+@functions {
+    void RenderTree(List<SCMS.Data.MenuItem> items, int? parentId = null, int indent = 0)
+    {
+        var children = items.Where(i => i.ParentId == parentId).OrderBy(i => i.Order).ToList();
+        foreach (var item in children)
+        {
+            <li class="list-group-item" style="padding-left:@(indent * 20 + 10)px" data-id="@item.Id">
+                <a href="#" class="menu-item-link text-decoration-none">@item.Title</a>
+            </li>
+            ;
+            RenderTree(items, item.Id, indent + 1);
+        }
+    }
+}
+
+<ul class="list-group">
+    @{
+        RenderTree(Model);
+    }
+</ul>

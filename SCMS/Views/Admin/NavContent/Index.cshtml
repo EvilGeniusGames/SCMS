@@ -1,0 +1,67 @@
+﻿@model SCMS.Models.NavContentViewModel
+
+@{
+    ViewData["Title"] = "NavContent Manager";
+}
+
+<div class="container-fluid py-4">
+    <!-- Menu Group Selector Row -->
+    <div class="card p-3 mb-3">
+        <label class="form-label mb-2">Menu Group:</label>
+        <div class="d-flex align-items-center">
+            <select class="form-select w-auto me-2" id="menuGroupDropdown">
+                <option value="Main">Main</option>
+                @foreach (var group in Model.Groups.Where(g => g.GroupName != "Main"))
+                {
+                    <option value="@group.GroupName">@group.GroupName</option>
+                }
+            </select>
+
+            <button class="btn btn-success me-1" id="addGroupBtn" title="Add Group">➕ Add</button>
+            <button class="btn btn-warning me-1" id="renameGroupBtn" title="Rename Group">✏️ Edit</button>
+            <button class="btn btn-danger" id="deleteGroupBtn" title="Delete Group">🗑 Delete</button>
+        </div>
+    </div>
+
+    <!-- Main Toolbar -->
+    <div class="mb-3">
+        <button class="btn btn-primary me-2" id="addItemBtn">➕ Add Item</button>
+        <button class="btn btn-secondary me-2" id="addSubmenuBtn" disabled>➕ Add Submenu</button>
+        <button class="btn btn-danger me-2" id="deleteItemBtn">🗑 Delete</button>
+        <button class="btn btn-outline-secondary me-2" id="moveUpBtn">☰ Move Up</button>
+        <button class="btn btn-outline-secondary me-2" id="moveDownBtn">☰ Move Down</button>
+        <button class="btn btn-success" id="saveMenuBtn">💾 Save Menu</button>
+    </div>
+
+    <div class="row">
+        <!-- Menu Item Tree/List View -->
+        <div class="col-md-4">
+            <div class="card h-100" style="min-height: 300px;">
+                <div class="card-body">
+                    <ul class="list-group" id="menuTreeView">
+                        @{
+                            var mainGroup = Model.Groups.FirstOrDefault(g => g.GroupName == "Main");
+                            if (mainGroup != null)
+                            {
+                                await Html.RenderPartialAsync("_MenuTreePartial", mainGroup.Items);
+                            }
+                            else
+                            {
+                                <li class="list-group-item text-muted">No items found for Main group.</li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Pane Editor -->
+        <div class="col-md-8">
+            <div class="card h-100" style="min-height: 300px;" id="menuItemEditor">
+                <div class="card-body text-muted">
+                    Select a menu item to begin editing.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
