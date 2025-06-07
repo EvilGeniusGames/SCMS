@@ -65,3 +65,87 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const editorPane = document.getElementById("menuItemEditor");
+
+        document.querySelectorAll("#menuTreeView li").forEach(li => {
+            li.addEventListener("click", function (e) {
+                e.preventDefault();
+
+                const itemId = this.getAttribute("data-id");
+                const itemText = this.innerText.trim();
+
+                editorPane.innerHTML = `
+                    <div class="card-body">
+                        <h5 class="mb-3">Editing: ${itemText}</h5>
+                        <form id="menuEditorForm">
+                            <div class="mb-3">
+                                <label class="form-label">Title</label>
+                                <input type="text" class="form-control" name="title" value="${itemText}" />
+                            </div>
+
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" name="isExternal" id="isExternalCheck" />
+                                <label class="form-check-label" for="isExternalCheck">External Link</label>
+                            </div>
+
+                            <div id="urlGroup" class="mb-3 d-none">
+                                <label class="form-label">URL</label>
+                                <input type="text" class="form-control" name="url" placeholder="/your-page" />
+                            </div>
+
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" name="isVisible" id="isVisibleCheck" checked />
+                                <label class="form-check-label" for="isVisibleCheck">Visible</label>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Security Level</label>
+                                <select class="form-select" name="securityLevelId" id="securityLevelSelect">
+                                    <option value="3">Anonymous</option>
+                                    <option value="2">User</option>
+                                    <option value="1">Administrator</option>
+                                </select>
+                            </div>
+
+                            <div id="pageEditorGroup" class="mb-3 d-none">
+                                <label class="form-label">Page Content</label>
+                                <div id="quillEditor" style="height: 300px;"></div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </form>
+                    </div>
+                `;
+
+                const isExternalCheck = document.getElementById("isExternalCheck");
+                const urlGroup = document.getElementById("urlGroup");
+                const pageEditorGroup = document.getElementById("pageEditorGroup");
+
+                    let quillInstance = null;
+                    let quillInitialized = false;
+
+                    isExternalCheck.addEventListener("change", function () {
+                        const external = this.checked;
+
+                        urlGroup.classList.toggle("d-none", !external);
+                        pageEditorGroup.classList.toggle("d-none", external);
+
+                        setTimeout(() => {
+                            if (!external && !quillInitialized) {
+                                quillInstance = new Quill("#quillEditor", {
+                                    theme: "snow"
+                                });
+                                quillInitialized = true;
+                            }
+                        }, 10);
+                    });
+
+                // Trigger initial state
+                isExternalCheck.dispatchEvent(new Event("change"));
+            });
+        });
+    });
+</script>

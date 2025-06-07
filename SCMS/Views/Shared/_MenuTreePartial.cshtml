@@ -7,8 +7,9 @@
         foreach (var item in children)
         {
             <li class="list-group-item" style="padding-left:@(indent * 20 + 10)px" data-id="@item.Id">
-                <a href="#" class="menu-item-link text-decoration-none">@item.Title</a>
+                @item.Title
             </li>
+
             ;
             RenderTree(items, item.Id, indent + 1);
         }

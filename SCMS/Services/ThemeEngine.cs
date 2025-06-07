@@ -178,13 +178,6 @@ namespace SCMS.Services
                 return $"<span style='color: red; font-weight: bold;'>[UNKNOWN TOKEN: {safeToken}]</span>";
             });
 
-            //embed font awesome becuase its a requirment for the operation of the site,
-            const string fontAwesomeCdn = "<link href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css\" rel=\"stylesheet\">";
-            if (!result.Contains("cdnjs.cloudflare.com/ajax/libs/font-awesome"))
-            {
-                result = result.Replace("</head>", $"{fontAwesomeCdn}\n</head>");
-            }
-
             // Return the final rendered HTML
             return result;
         }
