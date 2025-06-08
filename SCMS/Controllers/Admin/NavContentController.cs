@@ -89,38 +89,93 @@ namespace SCMS.Controllers.Admin
             if (isAdminPage && !result.Contains("font-awesome/6.5.1/css/all.min.css"))
             {
                 result = result.Replace("</head>", @"
-<link href=""https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"" rel=""stylesheet"">
-</head>");
+                <link href=""https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"" rel=""stylesheet"">
+                </head>");
             }
 
             // Bootstrap
             if (isAdminPage && !result.Contains("bootstrap@5.3.2/dist/css/bootstrap.min.css"))
             {
                 result = result.Replace("</head>", @"
-<link href=""https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"" 
-      rel=""stylesheet"" 
-      integrity=""sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"" 
-      crossorigin=""anonymous"">
-</head>");
+                <link href=""https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"" 
+                      rel=""stylesheet"" 
+                      integrity=""sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"" 
+                      crossorigin=""anonymous"">
+                </head>");
             }
 
-            // Quill CSS
-            if (isAdminPage && !result.Contains("quill@2.0.3/dist/quill.snow.css"))
-            {
-                result = result.Replace("</head>", @"
-<link href=""https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css"" rel=""stylesheet"">
-</head>");
-            }
-
-            // Quill JS
-            if (isAdminPage && !result.Contains("quill@2.0.3/dist/quill.js"))
+            //tinymce 
+            if (!result.Contains("/lib/tinymce/tinymce.min.js"))
             {
                 result = result.Replace("</body>", @"
-<script src=""https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js""></script>
-</body>");
+                <script src=""/lib/tinymce/tinymce.min.js""></script>
+                </body>");
             }
 
             return Content(result, "text/html");
         }
+        
+        [HttpGet("load/{id}")]
+        public async Task<IActionResult> Load(int id)
+        {
+            var item = await _context.MenuItems
+                .Include(m => m.PageContent)
+                .Include(m => m.SecurityLevel)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (item == null) return NotFound();
+
+            return Json(new
+            {
+                item.Id,
+                item.Title,
+                item.Url,
+                item.IsVisible,
+                item.SecurityLevelId,
+                item.PageContent?.HtmlContent
+            });
+        }
+        [HttpPost("save")]
+        public async Task<IActionResult> Save([FromBody] MenuItemUpdateModel model)
+        {
+            var item = await _context.MenuItems
+                .Include(m => m.PageContent)
+                .FirstOrDefaultAsync(m => m.Id == model.Id);
+
+            if (item == null)
+                return NotFound();
+
+            item.Title = model.Title;
+            item.Url = model.IsExternal ? model.Url : null;
+            item.IsVisible = model.IsVisible;
+            item.SecurityLevelId = model.SecurityLevelId;
+
+            if (!model.IsExternal)
+            {
+                if (item.PageContent == null)
+                {
+                    item.PageContent = new PageContent
+                    {
+                        Title = item.Title,
+                        HtmlContent = model.HtmlContent ?? ""
+                    };
+                }
+                else
+                {
+                    item.PageContent.HtmlContent = model.HtmlContent ?? "";
+                }
+            }
+            else
+            {
+                if (item.PageContent != null)
+                    _context.PageContents.Remove(item.PageContent);
+                item.PageContent = null;
+                item.PageContentId = null;
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
     }
 }

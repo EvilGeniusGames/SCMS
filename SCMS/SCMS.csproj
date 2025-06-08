@@ -37,7 +37,9 @@
     <Folder Include="Areas\Identity\Data\" />
     <Folder Include="Database\" />
     <Folder Include="Themes\Default\js\" />
-    <Folder Include="wwwroot\" />
+    <Folder Include="uploads\protected\" />
+    <Folder Include="uploads\public\" />
+    <Folder Include="uploads\temp\" />
   </ItemGroup>
 
 </Project>

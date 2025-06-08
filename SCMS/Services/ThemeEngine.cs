@@ -170,6 +170,24 @@ namespace SCMS.Services
                     : html;
             });
 
+            // Inject Highlight.js CSS and optional spacing patch
+            if (!result.Contains("atom-one-dark.min.css"))
+            {
+                result = result.Replace("</head>", @"
+                <link href=""https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"" rel=""stylesheet"">
+                <link href=""/css/highlight-patch.css"" rel=""stylesheet"">
+                </head>");
+            }
+
+            // Inject Highlight.js JS and activation script
+            if (!result.Contains("highlight.min.js"))
+            {
+                result = result.Replace("</body>", @"
+                <script src=""https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js""></script>
+                <script>hljs.highlightAll();</script>
+                </body>");
+            }
+
 
             // Catch unknown tokens and replace with UNKNOWN Leave at bottom
             result = Regex.Replace(result, @"<cms:[^>]+\/>", match =>
