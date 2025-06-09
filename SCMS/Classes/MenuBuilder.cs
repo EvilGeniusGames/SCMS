@@ -124,22 +124,35 @@ namespace SCMS.Classes
             html.Append("</li>");
             return html.ToString();
         }
+        // TODO: When building the admin group manager, replace this logic with role-to-user resolution
+        // that supports dynamic group membership and custom role assignments.
         private static bool IsMenuItemAuthorized(ApplicationDbContext db, MenuItem item, ClaimsPrincipal user)
         {
-            var securityLevel = db.SecurityLevels
-                .FirstOrDefault(s => s.Id == item.SecurityLevelId);
-
-            if (securityLevel == null || securityLevel.Name == "Anonymous")
+            if (item.SecurityLevelId == 3)
                 return true;
 
-            var allowedRoles = db.SecurityLevelRoles
-                .Where(r => r.SecurityLevelId == item.SecurityLevelId)
+            if (!user.Identity?.IsAuthenticated ?? true)
+                return false;
+
+            // Get all roles assigned to this user
+            var roleNames = db.SecurityLevelRoles
                 .Select(r => r.RoleName)
+                .Distinct()
                 .ToList();
 
-            return allowedRoles.Any(user.IsInRole);
-        }
+            var userRoles = roleNames
+                .Where(user.IsInRole)
+                .ToList();
 
+            if (!userRoles.Any()) return false;
+
+            // Get minimum security level ID for user’s roles
+            var userMinLevel = db.SecurityLevelRoles
+                .Where(r => userRoles.Contains(r.RoleName))
+                .Min(r => r.SecurityLevelId);
+
+            return userMinLevel <= item.SecurityLevelId;
+        }
         public static string GenerateBreadcrumbHtml(ApplicationDbContext db, string currentUrl, ClaimsPrincipal user)
         {
             var allItems = db.MenuItems

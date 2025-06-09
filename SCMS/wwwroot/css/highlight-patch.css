@@ -1,0 +1,5 @@
+﻿/* highlight-patch.css */
+pre code {
+    padding: 1em;
+    border-radius: 6px;
+}

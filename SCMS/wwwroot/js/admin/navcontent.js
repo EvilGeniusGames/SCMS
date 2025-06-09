@@ -65,15 +65,56 @@
                 if (!external) {
                     setTimeout(() => {
                         tinymce.remove();
+
+                        console.log("🧠 Initializing TinyMCE...");
+
                         tinymce.init({
                             selector: '#tinymceEditor',
-                            plugins: 'code link image lists table hr paste',
-                            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline | alignleft aligncenter alignright | bullist numlist outdent indent | link image table hr | code removeformat',
+                            plugins: 'code link image lists table',
+                            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline | alignleft aligncenter alignright | bullist numlist outdent indent | link image table code removeformat',
                             menubar: false,
                             branding: false,
+                            license_key: 'gpl',
                             height: 400,
                             paste_as_text: true,
+
+                            images_upload_url: '/admin/upload/image',
+                            file_picker_types: 'image',
+                            file_picker_callback: function (cb, value, meta) {
+                                if (meta.filetype !== 'image') return;
+
+                                const input = document.createElement('input');
+                                input.setAttribute('type', 'file');
+                                input.setAttribute('accept', 'image/*');
+
+                                input.onchange = function () {
+                                    const file = this.files[0];
+                                    const formData = new FormData();
+                                    formData.append('file', file, file.name); // match your UploadController param name
+
+                                    fetch('/admin/upload/image', {
+                                        method: 'POST',
+                                        body: formData
+                                    })
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            if (data && data.url) {
+                                                cb(data.url, { alt: file.name });
+                                            } else {
+                                                alert("Upload failed: Invalid response.");
+                                            }
+                                        })
+                                        .catch(err => {
+                                            alert("Upload error: " + err);
+                                        });
+                                };
+
+                                input.click();
+                            },
+
+
                             setup: function (editor) {
+                                console.log("✅ TinyMCE setup triggered");
                                 editor.on('init', () => {
                                     if (data.htmlContent) {
                                         editor.setContent(data.htmlContent);
@@ -81,6 +122,7 @@
                                 });
                             }
                         });
+
                     }, 10);
                 } else {
                     tinymce.remove();
@@ -118,9 +160,18 @@
                 if (response.ok) {
                     const toast = new bootstrap.Toast(document.getElementById("saveToast"));
                     toast.show();
+
+                    if (!isExternal) {
+                        const reload = await fetch(`/admin/navcontent/load/${id}`);
+                        if (reload.ok) {
+                            const newData = await reload.json();
+                            tinymce.activeEditor.setContent(newData.htmlContent || "");
+                        }
+                    }
                 } else {
                     alert("Save failed.");
                 }
+
             }
         });
     });

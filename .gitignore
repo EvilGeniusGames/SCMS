@@ -76,3 +76,7 @@ docker-compose.override.yml
 
 #Ignore LuanchSettings.json
 SCMS/Properties/launchSettings.json
+
+#Ignore upload but keep file paths
+/wwwroot/uploads/*
+!/wwwroot/uploads/.gitkeep

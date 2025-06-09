@@ -6,6 +6,7 @@ using SCMS.Models;
 using SCMS.Services;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SCMS.Controllers.Admin
@@ -16,12 +17,15 @@ namespace SCMS.Controllers.Admin
     {
         private readonly ApplicationDbContext _context;
         private readonly RazorRenderer _razorRenderer;
+        private readonly IWebHostEnvironment _env;
 
-        public NavContentController(ApplicationDbContext context, RazorRenderer razorRenderer)
+        public NavContentController(ApplicationDbContext context, RazorRenderer razorRenderer, IWebHostEnvironment env)
         {
             _context = context;
             _razorRenderer = razorRenderer;
+            _env = env;
         }
+
 
         [HttpGet("/admin/navcontent")]
         public async Task<IActionResult> Index()
@@ -114,7 +118,7 @@ namespace SCMS.Controllers.Admin
 
             return Content(result, "text/html");
         }
-        
+
         [HttpGet("load/{id}")]
         public async Task<IActionResult> Load(int id)
         {
@@ -135,6 +139,7 @@ namespace SCMS.Controllers.Admin
                 item.PageContent?.HtmlContent
             });
         }
+
         [HttpPost("save")]
         public async Task<IActionResult> Save([FromBody] MenuItemUpdateModel model)
         {
@@ -148,34 +153,87 @@ namespace SCMS.Controllers.Admin
             item.Title = model.Title;
             item.Url = model.IsExternal ? model.Url : null;
             item.IsVisible = model.IsVisible;
+            // Check for security level change
+            bool securityChanged = item.PageContent != null && item.SecurityLevelId != model.SecurityLevelId;
             item.SecurityLevelId = model.SecurityLevelId;
+            var htmlContent = model.HtmlContent ?? "";
+
+
 
             if (!model.IsExternal)
             {
+                htmlContent = model.HtmlContent ?? "";
+
+                var matches = Regex.Matches(
+                    htmlContent,
+                    @"<img[^>]*?src=['""](?<src>(?:\.\./)*(media/secure|uploads/(temp|public|protected))/[^'""]+)['""]",
+                    RegexOptions.IgnoreCase);
+
+                foreach (Match match in matches)
+                {
+                    var rawSrc = match.Groups["src"].Value;
+                    var currentSrc = rawSrc.TrimStart('.', '/');
+                    var fileName = Path.GetFileName(currentSrc);
+
+                    string oldPath;
+                    if (currentSrc.StartsWith("media/secure", StringComparison.OrdinalIgnoreCase))
+                    {
+                        oldPath = Path.Combine(_env.ContentRootPath, "uploads", "protected", fileName);
+                    }
+                    else if (currentSrc.StartsWith("uploads/public", StringComparison.OrdinalIgnoreCase))
+                    {
+                        oldPath = Path.Combine(_env.WebRootPath, "uploads", "public", fileName);
+                    }
+                    else // includes temp or fallback
+                    {
+                        oldPath = Path.Combine(_env.WebRootPath, currentSrc.Replace('/', Path.DirectorySeparatorChar));
+                    }
+
+                    string newPath, newSrc;
+                    if (model.SecurityLevelId == 3)
+                    {
+                        newPath = Path.Combine(_env.WebRootPath, "uploads", "public", fileName);
+                        newSrc = $"/uploads/public/{fileName}";
+                    }
+                    else
+                    {
+                        newPath = Path.Combine(_env.ContentRootPath, "uploads", "protected", fileName);
+                        newSrc = $"/media/secure/{fileName}";
+                    }
+
+                    if (System.IO.File.Exists(oldPath))
+                    {
+                        Directory.CreateDirectory(Path.GetDirectoryName(newPath));
+                        System.IO.File.Move(oldPath, newPath, overwrite: true);
+                        htmlContent = htmlContent.Replace(rawSrc, newSrc);
+                    }
+                }
+
                 if (item.PageContent == null)
                 {
                     item.PageContent = new PageContent
                     {
                         Title = item.Title,
-                        HtmlContent = model.HtmlContent ?? ""
+                        HtmlContent = htmlContent
                     };
                 }
                 else
                 {
-                    item.PageContent.HtmlContent = model.HtmlContent ?? "";
+                    item.PageContent.HtmlContent = htmlContent;
                 }
             }
             else
             {
                 if (item.PageContent != null)
                     _context.PageContents.Remove(item.PageContent);
+
                 item.PageContent = null;
                 item.PageContentId = null;
             }
 
+
             await _context.SaveChangesAsync();
             return Ok();
         }
-
     }
 }

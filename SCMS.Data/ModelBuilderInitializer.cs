@@ -196,7 +196,15 @@ namespace SCMS.Services
                     </form>
                 </div>",
                     LastUpdated = DateTime.UtcNow
-                }
+                },
+                 new PageContent
+                 {
+                     Id = 8,
+                     PageKey = "secure-test",
+                     Title = "Secure Test Page",
+                     HtmlContent = "<p>This is a secure test page. You may upload a file here to verify access control.</p>",
+                     LastUpdated = DateTime.UtcNow
+                 }
             );
         }
 
@@ -306,6 +314,18 @@ namespace SCMS.Services
                     Order = 0,
                     IsVisible = true,
                     SecurityLevelId = 1
+                },
+                new MenuItem
+                {
+                    Id = 5,
+                    ParentId = null,
+                    Title = "Secure Test",
+                    Url = null,
+                    PageContentId = 8,
+                    MenuGroup = "Main",
+                    Order = 10,
+                    IsVisible = true,
+                    SecurityLevelId = 2
                 }
             );
 
