@@ -71,7 +71,7 @@
                         tinymce.init({
                             selector: '#tinymceEditor',
                             plugins: 'code link image lists table',
-                            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline | alignleft aligncenter alignright | bullist numlist outdent indent | link image table code removeformat',
+                            toolbar: 'fullscreenToggle | undo redo | blocks fontfamily fontsize | bold italic underline | alignleft aligncenter alignright | bullist numlist outdent indent | link image table code removeformat',
                             menubar: false,
                             branding: false,
                             license_key: 'gpl',
@@ -118,6 +118,13 @@
                                 editor.on('init', () => {
                                     if (data.htmlContent) {
                                         editor.setContent(data.htmlContent);
+                                    }
+                                });
+                                editor.ui.registry.addButton('fullscreenToggle', {
+                                    icon: 'fullscreen',
+                                    tooltip: 'Toggle Full Window',
+                                    onAction: function () {
+                                        document.body.classList.toggle('tinymce-fullscreen');
                                     }
                                 });
                             }

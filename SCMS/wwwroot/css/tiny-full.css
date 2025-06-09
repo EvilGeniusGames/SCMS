@@ -1,0 +1,30 @@
+﻿body.tinymce-fullscreen .tox.tox-tinymce {
+    position: fixed !important;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    z-index: 1055;
+    width: calc(100% - 20px) !important;
+    height: calc(100% - 20px) !important;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    background: white;
+    display: flex;
+    flex-direction: column;
+}
+
+body.tinymce-fullscreen .tox-editor-container {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+body.tinymce-fullscreen .tox-edit-area {
+    flex: 1 1 auto;
+    display: flex;
+}
+
+body.tinymce-fullscreen .tox-edit-area__iframe {
+    flex: 1 1 auto !important;
+    height: 100% !important;
+}

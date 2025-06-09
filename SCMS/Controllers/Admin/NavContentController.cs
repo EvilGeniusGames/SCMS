@@ -116,6 +116,15 @@ namespace SCMS.Controllers.Admin
                 </body>");
             }
 
+            // TinyMCE Fullscreen css
+            if (isAdminPage && !result.Contains("/css/tiny-full.css"))
+            {
+                result = result.Replace("</head>", @"
+                <link href=""/css/tiny-full.css"" rel=""stylesheet"">
+                </head>");
+            }
+
+
             return Content(result, "text/html");
         }
 
