@@ -122,6 +122,9 @@
     function wireMenuItemClicks() {
         document.querySelectorAll("#menuTreeView li").forEach(li => {
             li.addEventListener("click", async function (e) {
+                // Highlight selected
+                document.querySelectorAll("#menuTreeView li").forEach(el => el.classList.remove("active"));
+                this.classList.add("active");
                 e.preventDefault();
                 const itemId = this.getAttribute("data-id");
                 const response = await fetch(`/admin/navcontent/load/${itemId}`);
@@ -139,7 +142,7 @@
             <h5 class="mb-3">Editing: ${data.title}</h5>
             <form id="menuEditorForm" data-id="${data.id}">
                 <div class="mb-3">
-                    <label class="form-label">Title</label>
+                    <label class="form-label">Menu label/name</label>
                     <input type="text" class="form-control" name="title" value="${data.title}" />
                 </div>
 

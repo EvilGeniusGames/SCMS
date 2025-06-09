@@ -150,8 +150,6 @@ namespace SCMS.Controllers.Admin
                 item.PageContent?.MetaDescription,
                 MetaKeywords = item.PageContent?.MetaKeywords?.Split(',').Select(k => k.Trim()).ToList()
             });
-
-
         }
 
         [HttpPost("save")]
