@@ -145,8 +145,13 @@ namespace SCMS.Controllers.Admin
                 item.Url,
                 item.IsVisible,
                 item.SecurityLevelId,
-                item.PageContent?.HtmlContent
+                pageTitle = item.PageContent?.Title,
+                item.PageContent?.HtmlContent,
+                item.PageContent?.MetaDescription,
+                MetaKeywords = item.PageContent?.MetaKeywords?.Split(',').Select(k => k.Trim()).ToList()
             });
+
+
         }
 
         [HttpPost("save")]
@@ -162,17 +167,15 @@ namespace SCMS.Controllers.Admin
             item.Title = model.Title;
             item.Url = model.IsExternal ? model.Url : null;
             item.IsVisible = model.IsVisible;
+
             // Check for security level change
             bool securityChanged = item.PageContent != null && item.SecurityLevelId != model.SecurityLevelId;
             item.SecurityLevelId = model.SecurityLevelId;
+
             var htmlContent = model.HtmlContent ?? "";
-
-
 
             if (!model.IsExternal)
             {
-                htmlContent = model.HtmlContent ?? "";
-
                 var matches = Regex.Matches(
                     htmlContent,
                     @"<img[^>]*?src=['""](?<src>(?:\.\./)*(media/secure|uploads/(temp|public|protected))/[^'""]+)['""]",
@@ -222,13 +225,18 @@ namespace SCMS.Controllers.Admin
                 {
                     item.PageContent = new PageContent
                     {
-                        Title = item.Title,
-                        HtmlContent = htmlContent
+                        Title = model.PageTitle ?? item.Title,
+                        HtmlContent = htmlContent,
+                        MetaDescription = model.MetaDescription,
+                        MetaKeywords = string.Join(", ", model.MetaKeywords ?? new List<string>())
                     };
                 }
                 else
                 {
+                    item.PageContent.Title = model.PageTitle ?? item.Title;
                     item.PageContent.HtmlContent = htmlContent;
+                    item.PageContent.MetaDescription = model.MetaDescription;
+                    item.PageContent.MetaKeywords = string.Join(", ", model.MetaKeywords ?? new List<string>());
                 }
             }
             else
@@ -240,9 +248,146 @@ namespace SCMS.Controllers.Admin
                 item.PageContentId = null;
             }
 
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpPost("group/add")]
+        public async Task<IActionResult> AddGroup([FromBody] GroupNameModel model)
+        {
+            if (string.IsNullOrWhiteSpace(model.Name))
+                return BadRequest("Group name required.");
+
+            var page = new PageContent
+            {
+                Title = "New Page",
+                HtmlContent = "<p>New page content.</p>",
+                PageKey = Slugify(model.Name) + "-root"
+            };
+
+
+            var newItem = new MenuItem
+            {
+                Title = "New Menu Item",
+                MenuGroup = model.Name,
+                Order = 0,
+                IsVisible = true,
+                SecurityLevelId = 3,
+                PageContent = page
+            };
+
+            _context.PageContents.Add(page);
+            _context.MenuItems.Add(newItem);
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        [HttpPost("group/rename")]
+        public async Task<IActionResult> RenameGroup([FromBody] GroupRenameModel model)
+        {
+            if (string.IsNullOrWhiteSpace(model.NewName) || string.IsNullOrWhiteSpace(model.OldName))
+                return BadRequest("Both old and new group names are required.");
+
+            var items = await _context.MenuItems
+                .Where(m => m.MenuGroup == model.OldName)
+                .ToListAsync();
+
+            if (!items.Any()) return NotFound("Group not found.");
+
+            foreach (var item in items)
+                item.MenuGroup = model.NewName;
 
             await _context.SaveChangesAsync();
             return Ok();
         }
+
+        [HttpPost("group/delete")]
+        public async Task<IActionResult> DeleteGroup([FromBody] GroupNameModel model)
+        {
+            if(string.IsNullOrWhiteSpace(model.Name))
+            return BadRequest("Group name required.");
+
+            if (model.Name.Equals("Main", StringComparison.OrdinalIgnoreCase))
+                return BadRequest("The 'Main' group cannot be deleted.");
+
+            var items = await _context.MenuItems
+                .Where(m => m.MenuGroup == model.Name)
+                .ToListAsync();
+
+            var pageIds = items
+            .Where(i => i.PageContentId.HasValue)
+            .Select(i => i.PageContentId.Value)
+            .ToList();
+
+            var pages = await _context.PageContents
+                .Where(p => pageIds.Contains(p.Id))
+                .ToListAsync();
+
+            _context.PageContents.RemoveRange(pages);
+
+
+            if (!items.Any()) return NotFound("Group not found.");
+
+            _context.MenuItems.RemoveRange(items);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpGet("group/items/{groupName}")]
+        public async Task<IActionResult> LoadGroupItems(string groupName)
+        {
+            var items = await _context.MenuItems
+                .Where(m => m.MenuGroup == groupName && m.Title != "Admin")
+                .OrderBy(m => m.Order)
+                .ToListAsync();
+
+            return PartialView("_MenuTreePartial", items);
+        }
+        // make pageky from group name
+        private static string Slugify(string input)
+        {
+            return input
+                .ToLowerInvariant()
+                .Trim()
+                .Replace(" ", "-")
+                .Replace(".", "")
+                .Replace("/", "")
+                .Replace("\\", "")
+                .Replace(":", "")
+                .Replace("?", "")
+                .Replace("&", "")
+                .Replace("#", "")
+                .Replace("--", "-");
+        }
+
+
+
+        // DTOs
+        public class MenuItemUpdateModel
+        {
+            public int Id { get; set; }
+            public string Title { get; set; } = "";
+            public string? Url { get; set; }
+            public bool IsExternal { get; set; }
+            public bool IsVisible { get; set; }
+            public int SecurityLevelId { get; set; }
+            public string? HtmlContent { get; set; }
+            public string? PageTitle { get; set; }
+            public string? MetaDescription { get; set; }
+            public List<string>? MetaKeywords { get; set; }
+        }
+
+        public class GroupNameModel
+        {
+            public string Name { get; set; } = "";
+        }
+
+        public class GroupRenameModel
+        {
+            public string OldName { get; set; } = "";
+            public string NewName { get; set; } = "";
+        }
+
     }
 }

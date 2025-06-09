@@ -9,5 +9,7 @@
         public bool IsVisible { get; set; }
         public int SecurityLevelId { get; set; }
         public string? HtmlContent { get; set; }
+        public string? PageTitle { get; set; }
+
     }
 }

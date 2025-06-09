@@ -1,0 +1,9 @@
+﻿@using SCMS.Data
+@model List<MenuItem>
+
+@foreach (var item in Model)
+{
+    <li class="list-group-item" data-id="@item.Id">
+        @item.Title
+    </li>
+}
