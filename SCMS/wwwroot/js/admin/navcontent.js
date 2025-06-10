@@ -1,4 +1,6 @@
-﻿document.addEventListener("DOMContentLoaded", function () {
+﻿
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("DOM fully loaded");
     const editorPane = document.getElementById("menuItemEditor");
       
     let groupEditMode = null; // 'add' or 'rename'
@@ -270,6 +272,59 @@
 
         isExternalCheck.dispatchEvent(new Event("change"));
     }
+
+    const addItemBtn = document.getElementById('addItemBtn');
+    if (addItemBtn) {
+        addItemBtn.addEventListener('click', async () => {
+            const selected = document.querySelector("#menuTreeView li.active");
+            const currentGroup = document.getElementById("menuGroupDropdown").value;
+
+            const payload = {
+                title: "New Item",
+                group: currentGroup,
+                parentId: selected?.getAttribute("data-id") || null,
+                insertAfterId: selected?.getAttribute("data-id") || null
+            };
+
+            const response = await fetch("/admin/navcontent/item/create", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                await loadMenuTree(currentGroup);
+            } else {
+                alert("Failed to create item.");
+            }
+        });
+    }
+
+    document.getElementById('deleteItemBtn').addEventListener('click', async () => {
+        const selected = document.querySelector("#menuTreeView li.active");
+        if (!selected) {
+            alert("Please select a menu item to delete.");
+            return;
+        }
+
+        const id = selected.getAttribute("data-id");
+        const confirmed = confirm("Are you sure you want to delete this menu item and its page?");
+        if (!confirmed) return;
+
+        const response = await fetch(`/admin/navcontent/item/delete/${id}`, {
+            method: "POST"
+        });
+
+        if (response.ok) {
+            const group = document.getElementById("menuGroupDropdown").value;
+            await loadMenuTree(group);
+            document.getElementById("menuItemEditor").innerHTML =
+                `<div class="card-body text-muted">Select a menu item to begin editing.</div>`;
+        } else {
+            alert("Delete failed.");
+        }
+    });
+
 
     document.addEventListener("submit", async function (e) {
         if (e.target.id === "menuEditorForm") {

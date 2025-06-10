@@ -18,14 +18,12 @@ namespace SCMS.Controllers.Admin
         private readonly ApplicationDbContext _context;
         private readonly RazorRenderer _razorRenderer;
         private readonly IWebHostEnvironment _env;
-
         public NavContentController(ApplicationDbContext context, RazorRenderer razorRenderer, IWebHostEnvironment env)
         {
             _context = context;
             _razorRenderer = razorRenderer;
             _env = env;
         }
-
 
         [HttpGet("/admin/navcontent")]
         public async Task<IActionResult> Index()
@@ -342,6 +340,64 @@ namespace SCMS.Controllers.Admin
 
             return PartialView("_MenuTreePartial", items);
         }
+
+        [HttpPost("item/create")]
+        public async Task<IActionResult> CreateMenuItem([FromBody] CreateItemModel model)
+        {
+            var siblings = await _context.MenuItems
+                .Where(m => m.MenuGroup == model.Group && m.ParentId == model.ParentId)
+                .OrderBy(m => m.Order)
+                .ToListAsync();
+
+            int insertIndex = siblings.FindIndex(i => i.Id == model.InsertAfterId);
+            if (insertIndex == -1) insertIndex = siblings.Count;
+
+            var newItem = new MenuItem
+            {
+                Title = model.Title,
+                MenuGroup = model.Group,
+                ParentId = model.ParentId,
+                Order = insertIndex + 1,
+                IsVisible = true,
+                SecurityLevelId = 3,
+                PageContent = new PageContent
+                {
+                    Title = model.Title,
+                    HtmlContent = "<p>New content</p>",
+                    PageKey = Guid.NewGuid().ToString("N")
+                }
+            };
+
+            // Shift others
+            for (int i = insertIndex + 1; i < siblings.Count; i++)
+                siblings[i].Order = i + 1;
+
+            _context.PageContents.Add(newItem.PageContent);
+            _context.MenuItems.Add(newItem);
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        [HttpPost("item/delete/{id}")]
+        public async Task<IActionResult> DeleteItem(int id)
+        {
+            var item = await _context.MenuItems
+                .Include(m => m.PageContent)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (item == null) return NotFound();
+
+            if (item.PageContent != null)
+                _context.PageContents.Remove(item.PageContent);
+
+            _context.MenuItems.Remove(item);
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
+
         // make pageky from group name
         private static string Slugify(string input)
         {
@@ -359,8 +415,6 @@ namespace SCMS.Controllers.Admin
                 .Replace("--", "-");
         }
 
-
-
         // DTOs
         public class MenuItemUpdateModel
         {
@@ -375,16 +429,21 @@ namespace SCMS.Controllers.Admin
             public string? MetaDescription { get; set; }
             public List<string>? MetaKeywords { get; set; }
         }
-
         public class GroupNameModel
         {
             public string Name { get; set; } = "";
         }
-
         public class GroupRenameModel
         {
             public string OldName { get; set; } = "";
             public string NewName { get; set; } = "";
+        }
+        public class CreateItemModel
+        {
+            public string Title { get; set; } = "";
+            public string Group { get; set; } = "";
+            public int? ParentId { get; set; }
+            public int? InsertAfterId { get; set; }
         }
 
     }

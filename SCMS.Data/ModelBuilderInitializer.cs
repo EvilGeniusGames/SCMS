@@ -275,7 +275,7 @@ namespace SCMS.Services
                     Url = "#",
                     PageContentId = null,
                     MenuGroup = "Main",
-                    Order = 99,
+                    Order = 9999,
                     IsVisible = true,
                     SecurityLevelId = 1
                 },
