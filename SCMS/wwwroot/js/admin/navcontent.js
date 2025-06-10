@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", function () {
         loadMenuTree(this.value);
     });
 
-    //wire up the clicks for the menu items
+    // wire up the clicks for the menu items
     function wireMenuItemClicks() {
         document.querySelectorAll("#menuTreeView li").forEach(li => {
             li.addEventListener("click", async function (e) {
@@ -136,6 +136,8 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
     }
+
+    // render the editor pane
     function renderEditor(data) {
         const editorPane = document.getElementById("menuItemEditor");
 
@@ -273,6 +275,130 @@ document.addEventListener("DOMContentLoaded", function () {
         isExternalCheck.dispatchEvent(new Event("change"));
     }
 
+    // outdent menu item
+    document.getElementById('outdentBtn').addEventListener('click', async () => {
+        const selected = document.querySelector("#menuTreeView li.active");
+        if (!selected) {
+            alert("Select a menu item first.");
+            return;
+        }
+
+        const selectedId = parseInt(selected.getAttribute("data-id"));
+        const currentGroup = document.getElementById("menuGroupDropdown").value;
+
+        // Fetch current menu structure
+        const response = await fetch(`/admin/navcontent/group/structure/${currentGroup}`);
+        if (!response.ok) {
+            alert("Failed to retrieve structure.");
+            return;
+        }
+
+        const menu = await response.json();
+        const index = menu.findIndex(i => i.id === selectedId);
+        const current = menu[index];
+        const above = menu[index - 1];
+
+        if (!current || index === 0) {
+            alert("Cannot outdent the first item.");
+            return;
+        }
+
+        const newParentId = current.parentId
+            ? menu.find(i => i.id === current.parentId)?.parentId || null
+            : null;
+
+        const result = await fetch(`/admin/navcontent/item/set-parent`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                id: selectedId,
+                parentId: newParentId
+            })
+        });
+
+        if (result.ok) {
+            await loadMenuTree(currentGroup);
+        } else {
+            alert("Failed to outdent.");
+        }
+
+    });
+
+    // Function to calculate depth of an item in the tree
+    function getDepth(tree, item) {
+        let depth = 0;
+        let cursor = item;
+        while (cursor?.parentId) {
+            cursor = tree.find(i => i.id === cursor.parentId);
+            if (cursor) depth++;
+        }
+        return depth;
+    }
+
+    // Indent menu item
+
+    document.getElementById('indentBtn').addEventListener('click', async () => {
+        const selected = document.querySelector("#menuTreeView li.active");
+        if (!selected) {
+            alert("Select a menu item first.");
+            return;
+        }
+
+        const selectedId = parseInt(selected.getAttribute("data-id"));
+        const currentGroup = document.getElementById("menuGroupDropdown").value;
+
+        const response = await fetch(`/admin/navcontent/group/structure/${currentGroup}`);
+        if (!response.ok) {
+            alert("Failed to retrieve structure.");
+            return;
+        }
+
+        const menu = await response.json();
+        const index = menu.findIndex(i => i.id === selectedId);
+        const current = menu[index];
+        const aboveItem = menu[index - 1];
+
+        if (!aboveItem) {
+            alert("Cannot indent — no item above.");
+            return;
+        }
+
+        const currentDepth = getDepth(menu, current);
+        const aboveDepth = getDepth(menu, aboveItem);
+
+        if (currentDepth > aboveDepth + 1) {
+            alert("Cannot indent more than one level deeper than the item above.");
+            return;
+        }
+
+        const result = await fetch(`/admin/navcontent/item/set-parent`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                id: selectedId,
+                parentId: aboveItem.id
+            })
+        });
+
+        if (result.ok) {
+            await loadMenuTree(currentGroup);
+        } else {
+            alert("Indent failed.");
+        }
+    });
+
+    function getDepth(tree, item) {
+        let depth = 0;
+        let cursor = item;
+        while (cursor?.parentId) {
+            cursor = tree.find(i => i.id === cursor.parentId);
+            if (cursor) depth++;
+        }
+        return depth;
+    }
+
+
+    // add new menu
     const addItemBtn = document.getElementById('addItemBtn');
     if (addItemBtn) {
         addItemBtn.addEventListener('click', async () => {
@@ -300,6 +426,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    //delete selected menu item
     document.getElementById('deleteItemBtn').addEventListener('click', async () => {
         const selected = document.querySelector("#menuTreeView li.active");
         if (!selected) {
@@ -325,7 +452,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-
+    //submit the form
     document.addEventListener("submit", async function (e) {
         if (e.target.id === "menuEditorForm") {
             e.preventDefault();
@@ -381,10 +508,12 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    // Update rename button visibility based on group
     function updateRenameVisibility(groupName) {
         document.getElementById('renameGroupBtn').classList.toggle('d-none', groupName === "Main");
     }
 
+    // Initial load of menu tree
     const initialGroup = document.getElementById("menuGroupDropdown")?.value;
     if (initialGroup) {
         loadMenuTree(initialGroup);

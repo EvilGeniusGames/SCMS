@@ -58,3 +58,4 @@ If no template is found, a hardcoded HTML structure is generated using `StringBu
 ### 8. Final Output
 The method returns a complete HTML `<ul>` block containing the rendered menu, ready to be inserted into the page layout.
 
+**Note:** If a submenu item is marked as *Anonymous* but its parent menu item is restricted (e.g., set to *User* or *Administrator*), anonymous users will not see it. The visibility of child items is dependent on the visibility of their parent. To ensure a public item is accessible, its parent must also be accessible to the same or a less restrictive security level.

@@ -397,8 +397,36 @@ namespace SCMS.Controllers.Admin
             return Ok();
         }
 
+        [HttpGet("group/structure/{groupName}")]
+        public async Task<IActionResult> GetGroupStructure(string groupName)
+        {
+            var items = await _context.MenuItems
+                .Where(m => m.MenuGroup == groupName)
+                .OrderBy(m => m.Order)
+                .Select(m => new {
+                    m.Id,
+                    m.Title,
+                    m.Order,
+                    m.ParentId
+                })
+                .ToListAsync();
 
-        // make pageky from group name
+            return Json(items);
+        }
+
+        [HttpPost("item/set-parent")]
+        public async Task<IActionResult> SetParent([FromBody] ParentUpdateModel model)
+        {
+            var item = await _context.MenuItems.FirstOrDefaultAsync(m => m.Id == model.Id);
+            if (item == null) return NotFound();
+
+            item.ParentId = model.ParentId;
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        // make pagekey from group name
         private static string Slugify(string input)
         {
             return input
@@ -444,6 +472,11 @@ namespace SCMS.Controllers.Admin
             public string Group { get; set; } = "";
             public int? ParentId { get; set; }
             public int? InsertAfterId { get; set; }
+        }
+        public class ParentUpdateModel
+        {
+            public int Id { get; set; }
+            public int? ParentId { get; set; }
         }
 
     }
