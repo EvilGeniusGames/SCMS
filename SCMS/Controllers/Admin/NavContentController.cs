@@ -411,7 +411,19 @@ namespace SCMS.Controllers.Admin
                 })
                 .ToListAsync();
 
-            return Json(items);
+            List<object> flattened = new();
+            void AddWithChildren(int? parentId)
+            {
+                var children = items.Where(i => i.ParentId == parentId).OrderBy(i => i.Order).ToList();
+                foreach (var child in children)
+                {
+                    flattened.Add(child);
+                    AddWithChildren(child.Id);
+                }
+            }
+
+            AddWithChildren(null);
+            return Json(flattened);
         }
 
         [HttpPost("item/set-parent")]
