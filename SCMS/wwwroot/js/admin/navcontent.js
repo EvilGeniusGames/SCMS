@@ -1,6 +1,7 @@
 ﻿
 document.addEventListener("DOMContentLoaded", function () {
-    console.log("DOM fully loaded");
+    // Ensure DOM is fully loaded before running scripts
+
     const editorPane = document.getElementById("menuItemEditor");
       
     let groupEditMode = null; // 'add' or 'rename'
@@ -206,7 +207,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const isExternalCheck = document.getElementById("isExternalCheck");
         const urlGroup = document.getElementById("urlGroup");
         const pageEditorGroup = document.getElementById("pageEditorGroup");
-
+        // Initialize TinyMCE editor
         isExternalCheck.addEventListener("change", function () {
             const external = this.checked;
             urlGroup.classList.toggle("d-none", !external);
@@ -279,60 +280,100 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // outdent menu item
     document.getElementById('outdentBtn').addEventListener('click', async () => {
+        // Check for selected item
         const selected = document.querySelector("#menuTreeView li.active");
         if (!selected) {
             alert("Select a menu item first.");
             return;
         }
 
+        // Get the selected item's ID and current group
         const selectedId = parseInt(selected.getAttribute("data-id"));
         const currentGroup = document.getElementById("menuGroupDropdown").value;
 
+        // Fetch the current menu structure from controller
         const response = await fetch(`/admin/navcontent/group/structure/${currentGroup}`);
         if (!response.ok) {
             alert("Failed to retrieve structure.");
             return;
         }
 
+        // Serialize the menu structure
         const menu = await response.json();
-        const index = menu.findIndex(i => i.id === selectedId);
-        const current = menu[index];
-        const currentDepth = getDepth(menu, current);
 
-        if (currentDepth === 0) {
+        // searches the menu array for the item whose id matches the selected item's ID.
+        const current = menu.find(i => i.id === selectedId);
+        if (!current) {
+            alert("Current item not found.");
+            return;
+        }
+
+        // Check if the item is already at root level
+        if (!current.parentId) {
             alert("Item is already at root level.");
             return;
         }
 
-        const targetDepth = currentDepth - 1;
-        let newParentId = null;
+        // Locate the index of the current item in the menu array
+        const index = menu.findIndex(i => i.id === selectedId);
 
-        for (let i = index - 1; i >= 0; i--) {
-            const candidate = menu[i];
-            const candidateDepth = getDepth(menu, candidate);
-            if (candidateDepth === targetDepth - 1) {
-                newParentId = candidate.id;
-                break;
-            }
-        }
+        // Attempt to find the first item above whose ID matches the current item's parentId
+        const currentParentId = current.parentId;
+        const parent = menu.find(i => i.id === currentParentId);
 
-        const result = await fetch(`/admin/navcontent/item/set-parent`, {
+        // Determine the grandparentId of the current item
+        const grandParentId = parent?.parentId ?? null;
+
+        // If no parent found, we can't outdent
+        const newParentId = parent?.parentId ?? null;
+
+        // Set new parent
+        const parentResult = await fetch(`/admin/navcontent/item/set-parent`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 id: selectedId,
-                parentId: newParentId // may be null (root)
+                parentId: newParentId
             })
         });
-
-        if (result.ok) {
-            await loadMenuTree(currentGroup);
-        } else {
+        // Check if the parent update was successful
+        if (!parentResult.ok) {
             alert("Outdent failed.");
+            return;
         }
+        // Fetch structure again to reorder siblings
+        const reorderResponse = await fetch(`/admin/navcontent/group/structure/${currentGroup}`);
+        if (reorderResponse.ok) {
+            const refreshed = await reorderResponse.json();
+            const siblings = refreshed.filter(i => i.parentId === newParentId);
+
+            // Find index of previous parent in sibling list
+            let insertIndex = siblings.findIndex(i => i.id === parent?.id);
+
+            // If no parent found, insert at the end of the list
+            if (insertIndex === -1) {
+                // fallback: place after the first root-level item
+                insertIndex = 0;
+            }
+
+            // If the current item is already at the end, no need to reorder
+            siblings.splice(insertIndex + 1, 0, current);
+
+            // Reorder siblings based on their new order
+            const reorderPayload = siblings.map((item, i) => ({ id: item.id, order: i }));
+            // Send reorder request
+            await fetch("/admin/navcontent/item/reorder", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(reorderPayload)
+            });
+        }
+        // Reload the menu tree to reflect changes
+        await loadMenuTree(currentGroup);
     });
 
-    // Function to calculate depth of an item in the tree
+
+        // Function to calculate depth of an item in the tree
     function getDepth(tree, item) {
         let depth = 0;
         let cursor = item;
@@ -345,6 +386,86 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Indent menu item
     document.getElementById('indentBtn').addEventListener('click', async () => {
+        //cehck for selected item
+        const selected = document.querySelector("#menuTreeView li.active");
+        if (!selected) {
+            alert("Select a menu item first.");
+            return;
+        }
+        // Get the selected item's ID and current group
+        const selectedId = parseInt(selected.getAttribute("data-id"));
+        const currentGroup = document.getElementById("menuGroupDropdown").value;
+        // Fetch the current menu structure from controller
+        const response = await fetch(`/admin/navcontent/group/structure/${currentGroup}`);
+        if (!response.ok) {
+            alert("Failed to retrieve structure.");
+            return;
+        }
+        // seralize the menu structure
+        const menu = await response.json();
+        //check if there is an item aboe it in the hierarchy
+        const index = menu.findIndex(i => i.id === selectedId);
+        if (index <= 0) {
+            alert("Cannot indent — no item above.");
+            return;
+        }
+        // Get the item above the selected one
+        const above = menu[index - 1];
+        const current = menu[index];
+
+        // Find nearest shallower item to act as new parent
+        let newParentId = null;
+
+        for (let i = index - 1; i >= 0; i--) {
+            const candidate = menu[i];
+
+            // Find the first item above at the same level
+            if ((candidate.parentId ?? null) === (current.parentId ?? null)) {
+                newParentId = candidate.id;
+                break;
+            }
+        }
+
+        // if no item above has a parentid that matches the current item's parentId, we can't indent
+        if (!newParentId) {
+            alert("No suitable parent found for indent.");
+            return;
+        }
+
+        // Set new parent
+        const parentResult = await fetch(`/admin/navcontent/item/set-parent`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                id: selectedId,
+                parentId: newParentId
+            })
+        });
+        // Check if the parent update was successful
+        if (!parentResult.ok) {
+            alert("Parent update failed.");
+            return;
+        }
+
+        // Fetch structure again to reorder siblings
+        const reorderResponse = await fetch(`/admin/navcontent/group/structure/${currentGroup}`);
+        if (reorderResponse.ok) {
+            const refreshed = await reorderResponse.json();
+            const siblings = refreshed.filter(i => i.parentId === newParentId);
+            const reorderPayload = siblings.map((item, i) => ({ id: item.id, order: i }));
+
+            await fetch("/admin/navcontent/item/reorder", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(reorderPayload)
+            });
+        }
+        // Reload the menu tree to reflect changes
+        await loadMenuTree(currentGroup);
+    });
+
+    // Move down menu item
+    document.getElementById('moveDownBtn').addEventListener('click', async () => {
         const selected = document.querySelector("#menuTreeView li.active");
         if (!selected) {
             alert("Select a menu item first.");
@@ -363,44 +484,77 @@ document.addEventListener("DOMContentLoaded", function () {
         const menu = await response.json();
         const index = menu.findIndex(i => i.id === selectedId);
         const current = menu[index];
-        const currentDepth = getDepth(menu, current);
-        const targetDepth = currentDepth + 1;
 
-        if (index <= 0) {
-            alert("Cannot indent — no item above.");
-            return;
-        }
-
-        // Walk up to find the first item at targetDepth - 1
-        let newParentId = null;
-        for (let i = index - 1; i >= 0; i--) {
+        // Find the next sibling with the same parent
+        for (let i = index + 1; i < menu.length; i++) {
             const candidate = menu[i];
-            const candidateDepth = getDepth(menu, candidate);
-            if (candidateDepth === targetDepth - 1) {
-                newParentId = candidate.id;
-                break;
+            if (candidate.parentId === current.parentId) {
+                const result = await fetch("/admin/navcontent/item/reorder", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify([
+                        { id: current.id, order: candidate.order },
+                        { id: candidate.id, order: current.order }
+                    ])
+                });
+
+                if (result.ok) {
+                    await loadMenuTree(currentGroup);
+                } else {
+                    alert("Move down failed.");
+                }
+
+                return;
             }
         }
 
-        if (newParentId === null) {
-            alert("No valid parent found to indent under.");
+        alert("No sibling below to move down with.");
+    });
+
+    // Move up menu item
+    document.getElementById('moveUpBtn').addEventListener('click', async () => {
+        const selected = document.querySelector("#menuTreeView li.active");
+        if (!selected) {
+            alert("Select a menu item first.");
             return;
         }
 
-        const result = await fetch(`/admin/navcontent/item/set-parent`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                id: selectedId,
-                parentId: newParentId
-            })
-        });
+        const selectedId = parseInt(selected.getAttribute("data-id"));
+        const currentGroup = document.getElementById("menuGroupDropdown").value;
 
-        if (result.ok) {
-            await loadMenuTree(currentGroup);
-        } else {
-            alert("Indent failed.");
+        const response = await fetch(`/admin/navcontent/group/structure/${currentGroup}`);
+        if (!response.ok) {
+            alert("Failed to retrieve structure.");
+            return;
         }
+
+        const menu = await response.json();
+        const index = menu.findIndex(i => i.id === selectedId);
+        const current = menu[index];
+
+        // Find previous sibling in same parent scope
+        for (let i = index - 1; i >= 0; i--) {
+            const prev = menu[i];
+            if (prev.parentId === current.parentId) {
+                const result = await fetch("/admin/navcontent/item/reorder", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify([
+                        { id: current.id, order: prev.order },
+                        { id: prev.id, order: current.order }
+                    ])
+                });
+
+                if (result.ok) {
+                    await loadMenuTree(currentGroup);
+                } else {
+                    alert("Move up failed.");
+                }
+                return;
+            }
+        }
+
+        alert("Cannot move up — no sibling above.");
     });
 
     // add new menu
@@ -413,7 +567,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const payload = {
                 title: "New Item",
                 group: currentGroup,
-                parentId: selected?.getAttribute("data-id") || null,
+                parentId: selected?.getAttribute("data-parent-id") || null,
                 insertAfterId: selected?.getAttribute("data-id") || null
             };
 

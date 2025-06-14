@@ -244,7 +244,9 @@ namespace SCMS.Controllers.Admin
                 item.PageContentId = null;
             }
 
+            await ReindexSiblingsAsync(item.MenuGroup, item.ParentId);
             await _context.SaveChangesAsync();
+
             return Ok();
         }
 
@@ -352,6 +354,13 @@ namespace SCMS.Controllers.Admin
             int insertIndex = siblings.FindIndex(i => i.Id == model.InsertAfterId);
             if (insertIndex == -1) insertIndex = siblings.Count;
 
+            // Shift all items after insertIndex forward
+            for (int i = insertIndex + 1; i < siblings.Count; i++)
+            {
+                siblings[i].Order = i + 1;
+            }
+
+            // Create new item at insert position
             var newItem = new MenuItem
             {
                 Title = model.Title,
@@ -368,16 +377,13 @@ namespace SCMS.Controllers.Admin
                 }
             };
 
-            // Shift others
-            for (int i = insertIndex + 1; i < siblings.Count; i++)
-                siblings[i].Order = i + 1;
-
             _context.PageContents.Add(newItem.PageContent);
             _context.MenuItems.Add(newItem);
             await _context.SaveChangesAsync();
 
             return Ok();
         }
+
 
         [HttpPost("item/delete/{id}")]
         public async Task<IActionResult> DeleteItem(int id)
@@ -433,10 +439,58 @@ namespace SCMS.Controllers.Admin
             if (item == null) return NotFound();
 
             item.ParentId = model.ParentId;
+            await ReindexSiblingsAsync(item.MenuGroup, item.ParentId);
             await _context.SaveChangesAsync();
 
             return Ok();
         }
+
+        [HttpPost("item/reorder")]
+        public async Task<IActionResult> Reorder([FromBody] List<ReorderItem> items)
+        {
+            foreach (var item in items)
+            {
+                var menuItem = await _context.MenuItems.FirstOrDefaultAsync(m => m.Id == item.Id);
+                if (menuItem != null)
+                {
+                    if (menuItem.Id == 1 && menuItem.Title == "Admin")
+                    {
+                        menuItem.Order = 9999; // Always force Admin to end
+                    }
+                    else
+                    {
+                        menuItem.Order = item.Order;
+                    }
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        // reindexer for menu items
+        private async Task ReindexSiblingsAsync(string menuGroup, int? parentId)
+        {
+            var siblings = await _context.MenuItems
+                .Where(m => m.MenuGroup == menuGroup && m.ParentId == parentId && m.Id != 1)
+                .OrderBy(m => m.Order)
+                .ToListAsync();
+
+            for (int i = 0; i < siblings.Count; i++)
+            {
+                siblings[i].Order = i;
+            }
+
+            // Explicitly reset Admin order if it exists in this scope
+            var admin = await _context.MenuItems.FirstOrDefaultAsync(m => m.Id == 1);
+            if (admin != null)
+            {
+                admin.Order = 9999;
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
 
         // make pagekey from group name
         private static string Slugify(string input)
@@ -489,6 +543,11 @@ namespace SCMS.Controllers.Admin
         {
             public int Id { get; set; }
             public int? ParentId { get; set; }
+        }
+        public class ReorderItem
+        {
+            public int Id { get; set; }
+            public int Order { get; set; }
         }
 
     }

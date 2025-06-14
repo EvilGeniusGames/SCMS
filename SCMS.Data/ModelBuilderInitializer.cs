@@ -13,7 +13,6 @@ namespace SCMS.Services
             SeedDefaultData(modelBuilder);
             SeedIdentityPages(modelBuilder);
         }
-
         private static void InitIdentity(ModelBuilder modelBuilder)
         {
             // Apply default Identity role configuration
@@ -299,7 +298,7 @@ namespace SCMS.Services
                     Url = "/admin/socialmedia",
                     PageContentId = null,
                     MenuGroup = "Main",
-                    Order = 0,
+                    Order = 1,
                     IsVisible = true,
                     SecurityLevelId = 1
                 },
@@ -311,7 +310,7 @@ namespace SCMS.Services
                     Url = "/admin/navcontent",
                     PageContentId = null,
                     MenuGroup = "Main",
-                    Order = 0,
+                    Order = 2,
                     IsVisible = true,
                     SecurityLevelId = 1
                 },
@@ -323,7 +322,7 @@ namespace SCMS.Services
                     Url = null,
                     PageContentId = 8,
                     MenuGroup = "Main",
-                    Order = 10,
+                    Order = 1,
                     IsVisible = true,
                     SecurityLevelId = 2
                 }
