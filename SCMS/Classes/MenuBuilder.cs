@@ -85,7 +85,8 @@ namespace SCMS.Classes
             {
                 Text = item.Title,
                 Url = url,
-                Children = children
+                Target = url.StartsWith("http", StringComparison.OrdinalIgnoreCase) ? "_blank" : null,
+                Items = children
             };
         }
 

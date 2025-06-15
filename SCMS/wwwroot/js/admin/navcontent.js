@@ -145,64 +145,65 @@ document.addEventListener("DOMContentLoaded", function () {
         const editorPane = document.getElementById("menuItemEditor");
 
         editorPane.innerHTML = `
-        <div class="card-body">
-            <h5 class="mb-3">Editing: ${data.title}</h5>
-            <form id="menuEditorForm" data-id="${data.id}">
-                <div class="mb-3">
-                    <label class="form-label">Menu label/name</label>
-                    <input type="text" class="form-control" name="title" value="${data.title}" />
-                </div>
+            <div class="card-body">
+                <form id="menuEditorForm" data-id="${data.id}">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h5 class="mb-0">Editing: ${data.title}</h5>
+                        <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Menu label/name</label>
+                        <input type="text" class="form-control" name="title" value="${data.title}" />
+                    </div>
 
-                <div class="mb-3 form-check">
-                    <input type="checkbox" class="form-check-input" name="isExternal" id="isExternalCheck" ${data.url ? 'checked' : ''} />
-                    <label class="form-check-label" for="isExternalCheck">External Link</label>
-                </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" name="isExternal" id="isExternalCheck" ${data.url ? 'checked' : ''} />
+                        <label class="form-check-label" for="isExternalCheck">External Link</label>
+                    </div>
 
-                <div id="urlGroup" class="mb-3 ${data.url ? '' : 'd-none'}">
-                    <label class="form-label">URL</label>
-                    <input type="text" class="form-control" name="url" value="${data.url || ''}" />
-                </div>
+                    <div id="urlGroup" class="mb-3 ${data.url ? '' : 'd-none'}">
+                        <label class="form-label">URL</label>
+                        <input type="text" class="form-control" name="url" value="${data.url || ''}" />
+                    </div>
 
-                <div class="mb-3 form-check">
-                    <input type="checkbox" class="form-check-input" name="isVisible" id="isVisibleCheck" ${data.isVisible ? 'checked' : ''} />
-                    <label class="form-check-label" for="isVisibleCheck">Visible</label>
-                </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" name="isVisible" id="isVisibleCheck" ${data.isVisible ? 'checked' : ''} />
+                        <label class="form-check-label" for="isVisibleCheck">Visible</label>
+                    </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Security Level</label>
-                    <select class="form-select" name="securityLevelId">
-                        <option value="3" ${data.securityLevelId == 3 ? 'selected' : ''}>Anonymous</option>
-                        <option value="2" ${data.securityLevelId == 2 ? 'selected' : ''}>User</option>
-                        <option value="1" ${data.securityLevelId == 1 ? 'selected' : ''}>Administrator</option>
-                    </select>
-                </div>
+                    <div class="mb-3">
+                        <label class="form-label">Security Level</label>
+                        <select class="form-select" name="securityLevelId">
+                            <option value="3" ${data.securityLevelId == 3 ? 'selected' : ''}>Anonymous</option>
+                            <option value="2" ${data.securityLevelId == 2 ? 'selected' : ''}>User</option>
+                            <option value="1" ${data.securityLevelId == 1 ? 'selected' : ''}>Administrator</option>
+                        </select>
+                    </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Page Title (used in browser tab)</label>
-                    <input type="text" class="form-control" name="pageTitle" value="${data.pageTitle || ''}" />
-                </div>
+                    <div class="mb-3">
+                        <label class="form-label">Page Title (used in browser tab)</label>
+                        <input type="text" class="form-control" name="pageTitle" value="${data.pageTitle || ''}" />
+                    </div>
 
+                    <div class="mb-3">
+                        <label class="form-label">Meta Description</label>
+                        <textarea class="form-control" name="metaDescription" rows="2">${data.metaDescription || ''}</textarea>
+                    </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Meta Description</label>
-                    <textarea class="form-control" name="metaDescription" rows="2">${data.metaDescription || ''}</textarea>
-                </div>
+                    <div class="mb-3">
+                        <label class="form-label">Meta Keywords (comma-separated)</label>
+                        <textarea class="form-control" name="metaKeywords" rows="2">${(data.metaKeywords || []).join(', ')}</textarea>
+                    </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Meta Keywords (comma-separated)</label>
-                    <textarea class="form-control" name="metaKeywords" rows="2">${(data.metaKeywords || []).join(', ')}</textarea>
-                </div>
+                    <div id="pageEditorGroup" class="mb-3 ${data.url ? 'd-none' : ''}">
+                        <label class="form-label">Page Content</label>
+                        <textarea id="tinymceEditor"></textarea>
+                    </div>
 
-
-                <div id="pageEditorGroup" class="mb-3 ${data.url ? 'd-none' : ''}">
-                    <label class="form-label">Page Content</label>
-                    <textarea id="tinymceEditor"></textarea>
-                </div>
-
-                <button type="submit" class="btn btn-primary">Save</button>
-            </form>
-        </div>
-    `;
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        `;
 
         const isExternalCheck = document.getElementById("isExternalCheck");
         const urlGroup = document.getElementById("urlGroup");
